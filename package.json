@@ -1,5 +1,5 @@
 {
-  "name": "Neapolitan Chess",
+  "name": "neapolitan-chess",
   "version": "0.0.1",
   "description": "A online multiplayer variation of the game Chess.",
   "main": "app.js",
@@ -9,6 +9,7 @@
   "author": "Gavin Shriver",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "express": "~3.4.6"
+    "express": "~3.4.6",
+    "socket.io": "~0.9.16"
   }
 }
