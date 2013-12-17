@@ -1,3 +1,25 @@
 p{
   color:green;
 }
+.black{
+  background-color: black;
+}
+.white{
+  background-color: white;
+}
+.boardSquare{
+  width: 50px;
+  height: 50px;
+}
+.board{
+
+}
+.center{
+  text-align: center;
+}
+.light-gray{
+  background-color: #EEE;
+}
+.dark-gray{
+  background-color: #CCC;
+}
