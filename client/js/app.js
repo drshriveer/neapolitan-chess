@@ -1,3 +1,9 @@
+// This is to make handlebars work!
+Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTemplate) {
+  return Handlebars.compile(rawTemplate);
+};
+
+
 Neapolitan = new Backbone.Marionette.Application();
 
 // add the regions
@@ -11,7 +17,6 @@ Neapolitan.addInitializer(function(options){
   new Router();
   // Backbone.history.start();
 });
-
 
 
 

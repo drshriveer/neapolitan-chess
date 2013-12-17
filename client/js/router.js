@@ -10,11 +10,12 @@ Router = Backbone.Marionette.AppRouter.extend({
     "landing": "landing",
     "board": "board",
     "about": "about",
-    "rules": "rules"
+    "rules": "rules",
+    "": "landing"
   },
 
   landing: function(){
-    Neapolitan.layout.setView('#main', new BoardView()).render();
+    Neapolitan.layout.setView('#main', new Landing.LandingView()).render();
   },
   board: function(){
     Neapolitan.layout.setView('#main', new BoardView()).render();
