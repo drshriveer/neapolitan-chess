@@ -1,22 +1,24 @@
-// This is to make handlebars work!
-Backbone.Marionette.TemplateCache.prototype.compileTemplate = function(rawTemplate) {
-  return Handlebars.compile(rawTemplate);
-};
+define(["app", ]);
 
+Neapolitan = function(){
+  Neapolitan = new Marionette.Application;
+  // add the regions
+  Neapolitan.addRegions({
+    header: "#main-header",
+    footer: "#main-footer",
+    content: "#main"
+  });
 
-Neapolitan = new Backbone.Marionette.Application();
+  Neapolitan.addInitializer(function(options){
+    var route = new Router();
+    console.log('initialized router')
+    // Backbone.history.start();
+  });
 
-// add the regions
-Neapolitan.addRegions({
-  header: "#main-header",
-  footer: "#main-footer",
-  content: "#main"
-});
+  return Neapolitan;
+}();
 
-Neapolitan.addInitializer(function(options){
-  new Router();
-  // Backbone.history.start();
-});
+Neapolitan.start();
 
 
 

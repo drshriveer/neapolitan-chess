@@ -1,16 +1,7 @@
-this.Neapolitan.module("GameBoard", function(GameBoard, App, Backbone, Marionette, $, _){
-
-  // GameBoard.BoardView = Backbone.Marionette.itemView({
-  //   template: "templates/board"
-  // });
-
-  // GameBoard.RowView = Backbone.Marionette.CollectionView.extend({
-  //   itemView: GameBoard.AlertView,
-  //   emptyView: GameBoard.SaveView
-  // });
+define(['marionette','backbone'], function(Backbone, Marionette){
 
 
-  GameBoard.SquareView = Backbone.Marionette.ItemView.extend({
+  var SquareView = Backbone.Marionette.ItemView.extend({
     template: "templates/square",
     events: {
       'drag img': 'onDrag'
@@ -25,5 +16,19 @@ this.Neapolitan.module("GameBoard", function(GameBoard, App, Backbone, Marionett
     }
   });
 
+
 });
+
+
+  // GameBoard.BoardView = Backbone.Marionette.itemView({
+  //   template: "templates/board"
+  // });
+
+  // GameBoard.RowView = Backbone.Marionette.CollectionView.extend({
+  //   itemView: GameBoard.AlertView,
+  //   emptyView: GameBoard.SaveView
+  // });
+
+
+
 

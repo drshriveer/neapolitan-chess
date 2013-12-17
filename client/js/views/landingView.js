@@ -1,6 +1,6 @@
-this.Neapolitan.module("Landing", function(Landing, App, Backbone, Marionette, $, _){
+define(['marionette','backbone'], function(Backbone, Marionette){
 
-  Landing.LandingView = Backbone.Marionette.ItemView.extend({
+  var LandingView = Backbone.Marionette.ItemView.extend({
     template: "templates/landing"
   });
 

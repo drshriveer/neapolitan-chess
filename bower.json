@@ -1,0 +1,23 @@
+{
+  "name": "neapolitan-chess",
+  "version": "0.0.0",
+  "homepage": "https://github.com/drshriveer/neapolitan-chess",
+  "authors": [
+    "Gavin Shriver <gavin.shriver@gmail.com>"
+  ],
+  "description": "A varient of the game Chess.",
+  "main": "client/app.js",
+  "keywords": [
+    "chess"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "libs",
+    "node_modules",
+    "bower_components",
+    "client/js/libs",
+    "test",
+    "tests"
+  ]
+}

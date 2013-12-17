@@ -1,4 +1,4 @@
-this.Neapolitan.module("GameBoard", function(GameBoard, App, Backbone, Marionette, $, _){
+Neapolitan.module("GameBoard", function(GameBoard, App, Backbone, Marionette, $, _){
 
   GameBoard.Board = Backbone.Collection.extend({
     model: GameBoard.Square,

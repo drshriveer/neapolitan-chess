@@ -1,4 +1,4 @@
-this.Neapolitan.module("GameBoard", function(GameBoard, App, Backbone, Marionette, $, _){
+Neapolitan.module("GameBoard", function(GameBoard, App, Backbone, Marionette, $, _){
 
 var typeAttributes = {
   pawn: {
