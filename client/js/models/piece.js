@@ -1,5 +1,10 @@
-  
-Neapolitan.Square = Backbone.Marionette.Model.extend({
+Neapolitan.Pieces = Backbone.Marionette.Collection.extend({
+  model: Piece
+});
+
+
+
+Neapolitan.Piece = Backbone.Marionette.Model.extend({
   defaults: {
     color: 'black',
     x: 0,
