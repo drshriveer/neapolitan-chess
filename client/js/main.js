@@ -1,4 +1,4 @@
-define(["app", "router", "templates"], function(app, Router, Templates){
+define(["app", "router", "templates", "router"], function(app, Router, Templates){
   "use strict"
 
   Backbone.Layout.configure({

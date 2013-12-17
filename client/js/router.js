@@ -1,13 +1,17 @@
 define(['app', 'views/landingView', 'views/rulesView', 'views/boardView', 'view/aboutView'], function(app, LandingView, RulesView, AboutView, BoardView){
 "use strict"
   var Router = Backbone.Marionette.AppRouter.extend({
-    
+
     routes: {
       "landing": "landing",
       "board": "board",
       "about": "about",
       "rules": "rules",
       "": "landing"
+    },
+
+    initialize: function(){
+      app.use
     },
 
     landing: function(){
