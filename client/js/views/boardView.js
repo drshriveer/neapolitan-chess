@@ -2,7 +2,7 @@ define(['marionette','backbone'], function(Backbone, Marionette){
 
 
   var SquareView = Backbone.Marionette.ItemView.extend({
-    template: "templates/square",
+    template: "square",
     events: {
       'drag img': 'onDrag'
     },
