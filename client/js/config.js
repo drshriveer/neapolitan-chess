@@ -3,7 +3,7 @@
 // Require.js allows us to configure shortcut alias
 // There usage will become more apparent further along in the tutorial.
 require.config({
-  deps: ["main"],
+  // deps: ["main"],
   paths: {
     jquery: 'libs/jquery/jquery.min',
     underscore: 'libs/underscore/underscore-min',
@@ -18,10 +18,5 @@ require.config({
         this.Handlebars = Handlebars;
       }
     }
-    // ,
-    // marionette: {
-    //   deps: ["backbone", "underscore", "jquery"],
-    //   exports: 'marionette'
-    // },
   }
 });

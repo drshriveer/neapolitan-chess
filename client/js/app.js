@@ -1,24 +1,30 @@
-define(["app", ]);
+define(['underscore', 'jquery', 'backbone', 'router'],function(_, $, Backbone, Marionette, Router){
+  
 
-Neapolitan = function(){
-  Neapolitan = new Marionette.Application;
+  var app = new Marionette.Application;
   // add the regions
-  Neapolitan.addRegions({
+  app.addRegions({
     header: "#main-header",
     footer: "#main-footer",
     content: "#main"
   });
+  
+  app = function(){
 
-  Neapolitan.addInitializer(function(options){
-    var route = new Router();
-    console.log('initialized router')
-    // Backbone.history.start();
-  });
+    app.addInitializer(function(options){
+      var route = new Router();
+      console.log('initialized router')
+      // Backbone.history.start();
+    });
 
-  return Neapolitan;
-}();
+    return app;
+  }();
 
-Neapolitan.start();
+  app.start();
+
+});
+
+
 
 
 
