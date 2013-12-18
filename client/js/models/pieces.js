@@ -122,12 +122,14 @@ define(['backbone', 'marionette', 'models/piece', 'views/pieceView'], function(B
       var captureZones = [];
 
       //find and concat the capture zones made by pawns
-      captureZones = captureZones.concat(this.calcPawnCaptures(this.where({type:"pawn",color:"white"})));
-      captureZones = captureZones.concat(this.calcPawnCaptures(this.where({type:"pawn",color:"black"})));
+      captureZones = captureZones.concat(this.calcPawnCaptures("white"));
+      captureZones = captureZones.concat(this.calcPawnCaptures("black"));
 
       return captureZones;
     },
-    calcPawnCaptures: function(pawnList){
+    calcPawnCaptures: function(color){
+      var collect = this;
+      var pawnList = collect.where({type:"pawn",color:color});
       var captureZones = [];
       
       while(pawnList.length > 0){
@@ -139,16 +141,24 @@ define(['backbone', 'marionette', 'models/piece', 'views/pieceView'], function(B
           var pX = p.attributes.x;
           var pY = p.attributes.y;
           if(pawnX+2 === pX && pawnY === pY){
-            captureZones.push({y:pawnY,x:pawnX+1});
+            if(collect.where({y:pawnY,x:pawnX+1, color:color}).length === 0){
+              captureZones.push({y:pawnY,x:pawnX+1});
+            }
           }
           if(pawnX-2 === pX && pawnY === pY){
-            captureZones.push({y:pawnY,x:pawnX-1});
+            if(collect.where({y:pawnY,x:pawnX-1, color:color}).length === 0){
+              captureZones.push({y:pawnY,x:pawnX-1});
+            }
           }
           if(pawnY+2 === pY && pawnX === pX){
-            captureZones.push({y:pawnY+1,x:pawnX});
+            if(collect.where({y:pawnY+1,x:pawnX, color:color}).length === 0){
+              captureZones.push({y:pawnY+1,x:pawnX});
+            }
           }
           if(pawnY-2 === pY && pawnX === pX){
-            captureZones.push({y:pawnY-1,x:pawnX});
+            if(collect.where({y:pawnY-1,x:pawnX, color:color}).length === 0){
+              captureZones.push({y:pawnY-1,x:pawnX});
+            }
           }
         });
       };
