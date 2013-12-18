@@ -1,4 +1,4 @@
-define(['app', 'backbone','marionette', 'hbs!templates/control'], function(app, Backbone, Marionette, control){
+define(['app', 'backbone','marionette', 'hbs!templates/control', 'models/pieces'], function(app, Backbone, Marionette, control, Pieces){
 
   var ControlView = Backbone.Marionette.ItemView.extend({
     template: control,
@@ -20,7 +20,12 @@ define(['app', 'backbone','marionette', 'hbs!templates/control'], function(app, 
     },
     start: function(){
       //trigger load game
-      app.vent.trigger('startGame');
+      var pz = new Pieces();
+      pz.makeTeam("white", 1, 0);
+      pz.makeTeam("black", 6, 7);
+      pz.init();
+
+      // app.vent.trigger('startGame');
     },
 
     onRender: function(){

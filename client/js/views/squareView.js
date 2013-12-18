@@ -1,20 +1,14 @@
-define(['jqueryui','backbone','marionette','hbs!templates/square'], function(jqueryui, Backbone, Marionette, square){
+define(['app','jqueryui','backbone','marionette','hbs!templates/square'], function(app, jqueryui, Backbone, Marionette, square){
 
   var SquareView = Backbone.Marionette.ItemView.extend({
     template: square,
     tagName: 'td',
     className: 'center GameSquare',
-    attributes: {
-      'data-x': 0,
-      'data-y': 0
-    },
 
     initialize: function(){
       this.$el.addClass(this.model.attributes.classes);
-      this.attributes['data-x'] = this.model.attributes.col;
-      this.attributes['data-y'] = this.model.attributes.row;
       this.render();
-      this.$el.droppable({
+      $(this.$el.children()[0]).droppable({
         drop: this.handleDrop
       });
     },
@@ -24,14 +18,12 @@ define(['jqueryui','backbone','marionette','hbs!templates/square'], function(jqu
     },
 
     handleDrop: function(e, ui){
-      console.log('was dropped on this sqare!');
-      console.log(e);
-      console.log(ui);
-      // img must contain unique ID
-      // trigger event on model listening for that uniqueID, with data:
-      //    unique ID of any current residents ie: enemies, 
-      //    current squre
-      // the event should check if the movement is valid, 
+      e.preventDefault();
+      e.stopPropagation();
+      var uid = ui.draggable.children()[0].dataset.uid;
+      var x = +e.target.dataset.col;
+      var y = +e.target.dataset.row;
+      app.vent.trigger('dropped:'+ uid, x, y);
     }
   });
 
