@@ -29,9 +29,10 @@ define(['jqueryui','backbone','marionette','hbs!templates/piece', 'app'], functi
 
     highlightSquares: function(e, ui){
       var moveableSquares = this.model.canMoveTo();
+      console.log('moveableSquares', moveableSquares);
       for (var i = 0; i < moveableSquares.length; i++) {
         var square = this.findSquare(moveableSquares[i][0], moveableSquares[i][1]);
-        square.addClass('highlight-square');
+        square.parent().addClass('highlight-square');
       };
     },
 
@@ -39,14 +40,12 @@ define(['jqueryui','backbone','marionette','hbs!templates/piece', 'app'], functi
       var moveableSquares = this.model.canMoveTo();
       for (var i = 0; i < moveableSquares.length; i++) {
         var square = this.findSquare(moveableSquares[i][0], moveableSquares[i][1]);
-        square.removeClass('highlight-square');
+        square.parent().removeClass('highlight-square');
       }
     },
 
 
     findSquare: function(x,y){
-      y = y || this.model.attributes.y;
-      x = x || this.model.attributes.x;
       return $(".GameBoard [data-row='" + y + "'][data-col='" + x + "']");
     },
 
@@ -54,10 +53,12 @@ define(['jqueryui','backbone','marionette','hbs!templates/piece', 'app'], functi
       //use jquery to find the correct square...
       var uid = this.model.attributes.uid;
       var img_src = this.model.attributes.img_src;
+      var y = this.model.attributes.y;
+      var x = this.model.attributes.x;
       //reset style:
       this.$el.attr({style:'position: relative'});      
       this.$el.html('<img data-uid="'+uid+'" src="'+img_src+'"/>');
-      this.findSquare().append(this.$el);
+      this.findSquare(x,y).append(this.$el);
     }
 
   });
