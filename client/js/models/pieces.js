@@ -20,6 +20,9 @@ define(['backbone', 'marionette', 'models/piece', 'views/pieceView'], function(B
       });
     },
 
+    //
+    // calculate valid moves
+    //
     canMoveTo: function(model){
       var validMoves = [];
       var x,y;
@@ -31,66 +34,54 @@ define(['backbone', 'marionette', 'models/piece', 'views/pieceView'], function(B
       var NSBlocks = []; //negative slope blocks
 
       for (var i = 0; i <= model.attributes.movementLimit; i++) {
-        // foward and backward movements
-        // first check that the square is on the board
-        
+        // down movements        
         y = curY+i, x = curX;
         if(model.attributes.movesForwardAndBack && y >= 0 && y <= 7 && !this.checkBlocked(curY,y,UDBlocks,'y')){ 
-          //if the block is in the middle of the object and the next location.
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ UDBlocks.push(res); }
         }
-
+        // up movements
         y = curY-i, x = curX;
         if(model.attributes.movesForwardAndBack && y >= 0 && y <= 7 && !this.checkBlocked(curY,y,UDBlocks,'y')){ 
-          //if the block is in the middle of the object and the next location.
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ UDBlocks.push(res); }
         }
-        // right and left movements
-        // first check that the square is on the board
-       
+        // right movements
         y = curY, x = curX+i;
         if(model.attributes.movesLeftAndRight && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,RLBlocks,'x')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ RLBlocks.push(res); }
         }
-
-        
+        // left movements
         y = curY, x = curX-i;
         if(model.attributes.movesLeftAndRight && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,RLBlocks,'x')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ RLBlocks.push(res); }
         }
-        // diagonal movements
-        // first check that the square is on the board
-        
+        // positive slope up & right movement        
         y = curY+i, x = curX+i;
         if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,PSBlocks,'x')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ PSBlocks.push(res); }
         }
-       
+        // positive slope down & left movement        
         y = curY-i, x = curX-i;
         if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,PSBlocks,'x')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ PSBlocks.push(res); }
         }
-        // diagonal movements
-        // first check that the square is on the board
-        
+        // negative slope down & right movement
         y = curY-i, x = curX+i;
         if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,NSBlocks,'x')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ NSBlocks.push(res); }
         }
-        
+        // negative slope up & left movement
         y = curY+i, x = curX-i;
         if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,NSBlocks,'x')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ NSBlocks.push(res); }
         }
-
       };
 
       return validMoves;
@@ -107,16 +98,11 @@ define(['backbone', 'marionette', 'models/piece', 'views/pieceView'], function(B
     },
 
     checkAndMakeValidMove: function(x, y, validMoves){
-      var move = {x:x, y:y, highlightClass:""};
       var insquare = this.findWhere({x:x,y:y});
       if(insquare){
         return {blocked:true,x:x,y:y};
-        // if(! insquare.attributes.isEnemy){ return false; }
-        // move.highlightClass = "highlight-attack";
-      }else{
-        move.highlightClass = "highlight-move"; 
       }
-      return validMoves.push(move);
+      return validMoves.push({x:x, y:y});
     },
 
     isValidMove: function(x,y,model){
@@ -127,9 +113,51 @@ define(['backbone', 'marionette', 'models/piece', 'views/pieceView'], function(B
         }
       };
       return false;
+    },
 
+    //
+    // calculate capture zones
+    //
+    calculateCaptureZones: function(){
+      var captureZones = [];
 
-    }
+      //find and concat the capture zones made by pawns
+      captureZones = captureZones.concat(this.calcPawnCaptures(this.where({type:"pawn",color:"white"})));
+      captureZones = captureZones.concat(this.calcPawnCaptures(this.where({type:"pawn",color:"black"})));
+
+      return captureZones;
+    },
+    calcPawnCaptures: function(pawnList){
+      var captureZones = [];
+      
+      while(pawnList.length > 0){
+        var pawn = pawnList.pop();
+        var pawnX = pawn.attributes.x;
+        var pawnY = pawn.attributes.y;
+
+        _(pawnList).each(function(p){
+          var pX = p.attributes.x;
+          var pY = p.attributes.y;
+          if(pawnX+2 === pX && pawnY === pY){
+            captureZones.push({y:pawnY,x:pawnX+1});
+          }
+          if(pawnX-2 === pX && pawnY === pY){
+            captureZones.push({y:pawnY,x:pawnX-1});
+          }
+          if(pawnY+2 === pY && pawnX === pX){
+            captureZones.push({y:pawnY+1,x:pawnX});
+          }
+          if(pawnY-2 === pY && pawnX === pX){
+            captureZones.push({y:pawnY-1,x:pawnX});
+          }
+        });
+      };
+
+      console.log("checkingPawns", captureZones)
+      // checker(pawnList.pop);
+      // captureZones.push({x:4,y:4});
+      return captureZones;
+    },
 
   });
 

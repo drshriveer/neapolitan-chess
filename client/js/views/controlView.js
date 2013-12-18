@@ -14,16 +14,17 @@ define(['app', 'backbone','marionette', 'hbs!templates/control', 'models/pieces'
     },
     cheat: function(){
       //display helpers
+      app.vent.trigger('highlightAttacks',this.pz.calculateCaptureZones());
     },
     quit: function(){
       //reset game
     },
     start: function(){
       //trigger load game
-      var pz = new Pieces();
-      pz.makeTeam("white", 1, 0);
-      pz.makeTeam("black", 6, 7);
-      pz.init();
+      this.pz = new Pieces();
+      this.pz.makeTeam("white", 1, 0);
+      this.pz.makeTeam("black", 6, 7);
+      this.pz.init();
 
       // app.vent.trigger('startGame');
     },

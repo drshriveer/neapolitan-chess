@@ -16,7 +16,7 @@ define(['jqueryui','backbone','marionette','hbs!templates/piece', 'app'], functi
     },
 
     moveToSquare: function(x,y){
-      this.removeHighlights();
+      app.vent.trigger('unHighlightValidMoves');
       console.log("move to ", x, y);
       if(this.model.collection.isValidMove(x,y,this.model)){
         console.log('its a valid move... moving piece..');
@@ -28,21 +28,22 @@ define(['jqueryui','backbone','marionette','hbs!templates/piece', 'app'], functi
     },
 
     highlightSquares: function(e, ui){
-      var moveableSquares = this.model.collection.canMoveTo(this.model);
-      console.log('moveableSquares', moveableSquares);
-      for (var i = 0; i < moveableSquares.length; i++) {
-        var square = this.findSquare(moveableSquares[i]['x'], moveableSquares[i]['y']);
-        square.parent().addClass(moveableSquares[i]['highlightClass']);
-      };
+      var validMoves = this.model.collection.canMoveTo(this.model);
+      app.vent.trigger('highlightValidMoves', validMoves);
+      // console.log('validMoves', validMoves);
+      // for (var i = 0; i < moveableSquares.length; i++) {
+      //   var square = this.findSquare(moveableSquares[i]['x'], moveableSquares[i]['y']);
+      //   square.parent().addClass(moveableSquares[i]['highlightClass']);
+      // };
     },
 
-    removeHighlights: function(){
-      var moveableSquares = this.model.collection.canMoveTo(this.model);
-      for (var i = 0; i < moveableSquares.length; i++) {
-        var square = this.findSquare(moveableSquares[i]['x'], moveableSquares[i]['y']);
-        square.parent().removeClass(moveableSquares[i]['highlightClass']);
-      }
-    },
+    // removeHighlights: function(){
+    //   var moveableSquares = this.model.collection.canMoveTo(this.model);
+    //   for (var i = 0; i < moveableSquares.length; i++) {
+    //     var square = this.findSquare(moveableSquares[i]['x'], moveableSquares[i]['y']);
+    //     square.parent().removeClass(moveableSquares[i]['highlightClass']);
+    //   }
+    // },
 
 
     findSquare: function(x,y){

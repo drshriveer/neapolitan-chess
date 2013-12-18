@@ -1,4 +1,4 @@
-define(['backbone','marionette', 'views/squareView'], function(Backbone, Marionette, SquareView){
+define(['app','backbone','marionette', 'views/squareView'], function(app, Backbone, Marionette, SquareView){
 
 
   var BoardView = Backbone.Marionette.CollectionView.extend({
@@ -6,8 +6,54 @@ define(['backbone','marionette', 'views/squareView'], function(Backbone, Marione
     tagName: 'table',
     className: 'GameBoard',
 
+    initialize: function(){
+      app.vent.on('highlightValidMoves', this.highlightValidMoves, this);
+      app.vent.on('unHighlightValidMoves', this.unHighlightValidMoves, this);
+
+      app.vent.on('highlightAttacks', this.highlightAttacks, this);
+      app.vent.on('unHighlightAttacks', this.unHighlightAttacks, this);
+
+      app.vent.on('unHighlightAll', this.unHighlightAll, this);
+    },
+
+    unHighlightAll: function(){
+      this.unHighlightAttacks();
+      this.unHighlightValidMoves();
+    },
+
+    highlightValidMoves: function(validMoves){
+      for (var i = 0; i < validMoves.length; i++) {
+        var square = this.findSquare(validMoves[i]['x'], validMoves[i]['y']);
+        square.parent().addClass('highlight-move');
+      };
+    },
+
+    unHighlightValidMoves: function(){
+      $('.highlight-move').each(function(index, node){
+        $(node).removeClass('highlight-move');
+      });
+
+    },
+    highlightAttacks: function(validAttacks){
+      this.unHighlightAttacks();
+      for (var i = 0; i < validAttacks.length; i++) {
+        var square = this.findSquare(validAttacks[i]['x'], validAttacks[i]['y']);
+        square.parent().addClass('highlight-attack');
+      };
+    },
+
+    unHighlightAttacks: function(){
+      $('.highlight-attack').each(function(index, node){
+        $(node).removeClass('highlight-attack');
+      });
+    },
+
+    findSquare: function(x,y){
+      return $(".GameBoard [data-row='" + y + "'][data-col='" + x + "']");
+    },
+
+
     render: function(junk){
-      console.log(this.collection);
       for (var i = 0; i < 9; i++) {
         var rowItems = this.collection.where({row: i})
         var $row = $('<tr></tr>');
@@ -15,18 +61,8 @@ define(['backbone','marionette', 'views/squareView'], function(Backbone, Marione
           $row.append(new SquareView({model: model}).$el);
         });
        this.$el.append($row);        
-      };
-
-      // for (var i = 0; i < 9; i++) {
-      //   var $row = $('<tr></tr>');
-      //   for (var j = 0; j < 9; j++) {
-      //     var model = this.collection.models[i*8+j];
-      //     $row.append(new SquareView({model: model}).$el);
-      //   };
-      //  this.$el.append($row);
-      // };
-      
-    }
+      }; 
+    },
 
   });
 
