@@ -89,7 +89,7 @@ define(['app', 'backbone', 'marionette'], function(app, Backbone, Marionette){
       color: 'black',
       x: 0,
       y: 0,
-      canMove: true,
+      isEnemy: true,
       movesDiagonally: true,
       movesForwardAndBack: true,
       movesLeftAndRight: true,
@@ -116,56 +116,6 @@ define(['app', 'backbone', 'marionette'], function(app, Backbone, Marionette){
 
     getPos: function(){
       return {'x':this.attributes.x, 'y':this.attributes.y};
-    },
-
-    isValidMove: function(x,y){
-      var okayMoves = this.canMoveTo();
-      for (var i = 0; i < okayMoves.length; i++) {
-        if(okayMoves[i][0] === x && okayMoves[i][1] === y){
-          return true;
-        }
-      };
-      return false;
-    },
-
-    makeBlankBoard : function(){
-      var board = [];
-      for (var i = 0; i < 8; i++) {
-        board.push([]);
-        for (var j = 0; j < 8; j++) {
-          board[i].push(false); 
-        };
-      };
-      return board;
-    },
-
-    canMoveTo: function(){
-      var validPairs = [];
-
-      for (var i = -this.attributes.movementLimit; i <= this.attributes.movementLimit; i++) {
-        // foward and backward movements
-        // first check that the square is on the board
-        if(this.attributes.movesForwardAndBack && this.attributes.y+i >= 0 && this.attributes.y+i <= 7){ 
-          validPairs.push([this.attributes.x, this.attributes.y+i]);
-        }
-        // right and left movements
-        // first check that the square is on the board
-        if(this.attributes.movesLeftAndRight && this.attributes.x+i >= 0 && this.attributes.x+i <= 7){ 
-          validPairs.push([this.attributes.x+i, this.attributes.y]);
-        }
-        // diagonal movements
-        // first check that the square is on the board
-        if(this.attributes.movesDiagonally && this.attributes.y+i >= 0 && this.attributes.y+i <= 7 && this.attributes.x+i >= 0 && this.attributes.x+i <= 7){ 
-          validPairs.push([this.attributes.x+i, this.attributes.y+i]);
-        }
-        // diagonal movements
-        // first check that the square is on the board
-        if(this.attributes.movesDiagonally && this.attributes.y-i >= 0 && this.attributes.y-i <= 7 && this.attributes.x+i >= 0 && this.attributes.x+i <= 7){ 
-          validPairs.push([this.attributes.x+i, this.attributes.y-i]);
-        }
-      };
-
-      return validPairs;
     }
 
   });

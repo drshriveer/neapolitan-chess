@@ -18,7 +18,7 @@ define(['jqueryui','backbone','marionette','hbs!templates/piece', 'app'], functi
     moveToSquare: function(x,y){
       this.removeHighlights();
       console.log("move to ", x, y);
-      if(this.model.isValidMove(x,y)){
+      if(this.model.collection.isValidMove(x,y,this.model)){
         console.log('its a valid move... moving piece..');
         this.model.setPos(x,y);
       }else{
@@ -28,19 +28,19 @@ define(['jqueryui','backbone','marionette','hbs!templates/piece', 'app'], functi
     },
 
     highlightSquares: function(e, ui){
-      var moveableSquares = this.model.canMoveTo();
+      var moveableSquares = this.model.collection.canMoveTo(this.model);
       console.log('moveableSquares', moveableSquares);
       for (var i = 0; i < moveableSquares.length; i++) {
-        var square = this.findSquare(moveableSquares[i][0], moveableSquares[i][1]);
-        square.parent().addClass('highlight-square');
+        var square = this.findSquare(moveableSquares[i]['x'], moveableSquares[i]['y']);
+        square.parent().addClass(moveableSquares[i]['highlightClass']);
       };
     },
 
     removeHighlights: function(){
-      var moveableSquares = this.model.canMoveTo();
+      var moveableSquares = this.model.collection.canMoveTo(this.model);
       for (var i = 0; i < moveableSquares.length; i++) {
-        var square = this.findSquare(moveableSquares[i][0], moveableSquares[i][1]);
-        square.parent().removeClass('highlight-square');
+        var square = this.findSquare(moveableSquares[i]['x'], moveableSquares[i]['y']);
+        square.parent().removeClass(moveableSquares[i]['highlightClass']);
       }
     },
 
