@@ -1,7 +1,8 @@
-define(['marionette','backbone'], function(Backbone, Marionette){
+define(['backbone','marionette', 'hbs!templates/about'], function(Backbone, Marionette, about){
 
   var AboutView = Backbone.Marionette.ItemView.extend({
-    template: "about"
+    template: about
   });
 
+  return AboutView;
 });

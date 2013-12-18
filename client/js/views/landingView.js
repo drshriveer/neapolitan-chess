@@ -1,8 +1,9 @@
-define(['marionette','backbone'], function(Backbone, Marionette){
+define(['underscore', 'backbone','marionette', 'hbs!templates/landing'], function(_,Backbone, Marionette, templ){
 
   var LandingView = Backbone.Marionette.ItemView.extend({
-    template: "landing"
+    template: templ
   });
 
+  return LandingView;
 });
 

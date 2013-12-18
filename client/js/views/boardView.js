@@ -1,8 +1,7 @@
-define(['marionette','backbone'], function(Backbone, Marionette){
-
+define(['backbone','marionette','hbs!templates/square'], function(Backbone, Marionette, square){
 
   var SquareView = Backbone.Marionette.ItemView.extend({
-    template: "square",
+    template: square,
     events: {
       'drag img': 'onDrag'
     },
@@ -16,7 +15,7 @@ define(['marionette','backbone'], function(Backbone, Marionette){
     }
   });
 
-
+  return SquareView;
 });
 
 

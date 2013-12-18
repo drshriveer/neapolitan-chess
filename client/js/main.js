@@ -1,5 +1,9 @@
-define(["app", "router", "templates"], function(app, Router, Templates){
-  "use strict"
+require(["app", "router"], function(app, Router){
+
+  app.start();
+  app.router = new Router();
+  Backbone.history.start();
+
 
   // Backbone.Layout.configure({
   //   manage: true,

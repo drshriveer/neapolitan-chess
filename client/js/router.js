@@ -1,7 +1,8 @@
-define(['app', 'views/landingView', 'views/rulesView', 'views/boardView', 'view/aboutView'], function(app, LandingView, RulesView, AboutView, BoardView){
-"use strict"
-  var Router = Backbone.Marionette.AppRouter.extend({
+define(['app', 'backbone', 'marionette', 'views/landingView', 'views/rulesView', 'views/boardView', 'views/aboutView'], function( app, Backbone, Marionette, LandingView, RulesView, BoardView, AboutView){
+ 
+  var AppRouter;
 
+  AppRouter =  Backbone.Marionette.AppRouter.extend({
     routes: {
       "landing": "landing",
       "board": "board",
@@ -9,27 +10,24 @@ define(['app', 'views/landingView', 'views/rulesView', 'views/boardView', 'view/
       "rules": "rules",
       "": "landing"
     },
-
     initialize: function(){
-      app.use
+      // app.useLayout('layout');
     },
 
     landing: function(){
-      console.log('trying to render landing');
-      Neapolitan.layout.setView('#main', new Landing.LandingView()).render();
+      app.content.show(new LandingView());
     },
     board: function(){
-      Neapolitan.layout.setView('#main', new BoardView()).render();
+      app.content.show(new BoardView());
     },
     about: function(){
-      Neapolitan.layout.setView('#main', new AboutView()).render();
+      app.content.show(new AboutView());
     },
     rules: function(){
-      Neapolitan.layout.setView('#main', new BoardView()).render();
+      app.content.show(new RulesView());
     }
 
   });
 
-  })
-
+  return AppRouter;
 });

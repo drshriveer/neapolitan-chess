@@ -19,5 +19,8 @@
     "client/js/libs",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "hbs": "~0.5.0"
+  }
 }

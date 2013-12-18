@@ -1,7 +1,7 @@
-define(['underscore', 'jquery', 'backbone', 'router'],function(_, $, Backbone, Marionette, Router){
-  
+define(['backbone', 'marionette'], function( Backbone, Marionette){
+  "use strict"
 
-  var app = new Marionette.Application;
+  var app = new Backbone.Marionette.Application;
   // add the regions
   app.addRegions({
     header: "#main-header",
@@ -9,18 +9,17 @@ define(['underscore', 'jquery', 'backbone', 'router'],function(_, $, Backbone, M
     content: "#main"
   });
   
-  app = function(){
+  app.on("initialize:before", function(){
 
-    app.addInitializer(function(options){
-      var route = new Router();
-      console.log('initialized router')
-      // Backbone.history.start();
-    });
+  });
 
-    return app;
-  }();
+  app.addInitializer(function(){
+    // app.router = new Router();
+    // Backbone.history.start();
+    // console.log('initialized router');
+  });
 
-  app.start();
+  return app;
 
 });
 
