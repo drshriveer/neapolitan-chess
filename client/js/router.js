@@ -1,4 +1,4 @@
-define(['app', 'backbone', 'marionette', 'views/landingView', 'views/rulesView', 'views/boardView', 'views/aboutView'], function( app, Backbone, Marionette, LandingView, RulesView, BoardView, AboutView){
+define(['app', 'backbone', 'marionette', 'views/landingView', 'views/rulesView', 'views/boardView', 'views/aboutView', 'models/board', 'views/controlView'], function( app, Backbone, Marionette, LandingView, RulesView, BoardView, AboutView, Board, ControlView){
  
   var AppRouter;
 
@@ -18,13 +18,15 @@ define(['app', 'backbone', 'marionette', 'views/landingView', 'views/rulesView',
       app.content.show(new LandingView());
     },
     board: function(){
-      app.content.show(new BoardView());
+      var board = new Board();
+      app.content.show(new BoardView({collection: board}));
+      app.controler.show(new ControlView());
     },
     about: function(){
-      app.content.show(new AboutView());
+      app.info.show(new AboutView());
     },
     rules: function(){
-      app.content.show(new RulesView());
+      app.info.show(new RulesView());
     }
 
   });

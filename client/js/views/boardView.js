@@ -1,33 +1,26 @@
-define(['backbone','marionette','hbs!templates/square'], function(Backbone, Marionette, square){
+define(['backbone','marionette', 'views/squareView'], function(Backbone, Marionette, SquareView){
 
-  var SquareView = Backbone.Marionette.ItemView.extend({
-    template: square,
-    events: {
-      'drag img': 'onDrag'
-    },
 
-    initialize: function(){
+  var BoardView = Backbone.Marionette.CollectionView.extend({
+    itemView: SquareView,
 
-    },
+    render: function(junk){
+      var $table = $('<table></table>');
+      $table.append('<tr>')
 
-    onDrag: function(event){
-      console.log('im being draggeeeddd');
+      for (var i = 0; i < 9; i++) {
+        var $row = $('<tr></tr>');
+        for (var j = 0; j < 9; j++) {
+          var model = this.collection.models[i*9+j];
+          $row.append(new SquareView({model: model}).$el);
+        };
+       $table.append($row);
+      };
+
+      this.$el.append($table);
     }
+
   });
 
-  return SquareView;
+  return BoardView;
 });
-
-
-  // GameBoard.BoardView = Backbone.Marionette.itemView({
-  //   template: "templates/board"
-  // });
-
-  // GameBoard.RowView = Backbone.Marionette.CollectionView.extend({
-  //   itemView: GameBoard.AlertView,
-  //   emptyView: GameBoard.SaveView
-  // });
-
-
-
-

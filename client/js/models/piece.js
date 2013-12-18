@@ -1,4 +1,4 @@
-define(['marionette','backbone'], function(Backbone, Marionette){
+define(['app','marionette','backbone'], function(app, Backbone, Marionette){
 
   // static variable setup;
   var typeAttributes = {
@@ -77,12 +77,6 @@ define(['marionette','backbone'], function(Backbone, Marionette){
       }
     }
   };
-
-
-  // the collection!
-  var Pieces = Backbone.Collection.extend({
-    model: Piece
-  });
 
   // the model!
   var Piece = Backbone.Model.extend({
@@ -176,5 +170,7 @@ define(['marionette','backbone'], function(Backbone, Marionette){
     }
 
   });
+
+  return Piece
 });
 

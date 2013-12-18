@@ -6,7 +6,9 @@ define(['backbone', 'marionette'], function( Backbone, Marionette){
   app.addRegions({
     header: "#main-header",
     footer: "#main-footer",
-    content: "#main"
+    content: "#main",
+    controler: "#control",
+    info: "#info"
   });
   
   app.on("initialize:before", function(){
@@ -18,6 +20,18 @@ define(['backbone', 'marionette'], function( Backbone, Marionette){
     // Backbone.history.start();
     // console.log('initialized router');
   });
+
+  app.vent.on("startGame", function(e){
+    // start the bloody game!
+    // first think about loading the collection of pieces
+    //  with all the correct attributes
+    //  then add them to the sheet with their own listenrs...
+    
+  });
+
+  app.loadColorAtRows = function(pwan_row, other_row, color){
+    for()
+  };
 
   return app;
 
