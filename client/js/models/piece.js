@@ -108,8 +108,8 @@ define(['app', 'backbone', 'marionette'], function(app, Backbone, Marionette){
     },
 
     setPos: function(x,y){
-      this.attributes.x = x || this.attributes.x;
-      this.attributes.y = y || this.attributes.y;
+      this.attributes.x = x;
+      this.attributes.y = y;
       app.vent.trigger("moved:"+this.attributes.uid);
       //trigger movement?
     },
