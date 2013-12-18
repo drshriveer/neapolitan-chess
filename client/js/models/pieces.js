@@ -33,65 +33,70 @@ define(['backbone', 'marionette', 'models/piece', 'views/pieceView'], function(B
       for (var i = 0; i <= model.attributes.movementLimit; i++) {
         // foward and backward movements
         // first check that the square is on the board
-        x = curX;
-        y = curY+i;
-        if(model.attributes.movesForwardAndBack && y >= 0 && y <= 7 && !this.checkUDRLBlocked(curY,y,UDBlocks,'y')){ 
+        
+        y = curY+i, x = curX;
+        if(model.attributes.movesForwardAndBack && y >= 0 && y <= 7 && !this.checkBlocked(curY,y,UDBlocks,'y')){ 
           //if the block is in the middle of the object and the next location.
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ UDBlocks.push(res); }
         }
-        x = curX;
-        y = curY-i;
-        if(model.attributes.movesForwardAndBack && y >= 0 && y <= 7 && !this.checkUDRLBlocked(curY,y,UDBlocks,'y')){ 
+
+        y = curY-i, x = curX;
+        if(model.attributes.movesForwardAndBack && y >= 0 && y <= 7 && !this.checkBlocked(curY,y,UDBlocks,'y')){ 
           //if the block is in the middle of the object and the next location.
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ UDBlocks.push(res); }
         }
         // right and left movements
         // first check that the square is on the board
-        x = curX+i;
-        y = curY;
-        if(model.attributes.movesLeftAndRight && x >= 0 && x <= 7 && !this.checkUDRLBlocked(curX,x,RLBlocks,'x')){ 
+       
+        y = curY, x = curX+i;
+        if(model.attributes.movesLeftAndRight && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,RLBlocks,'x')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ RLBlocks.push(res); }
         }
 
-        x = curX-i;
-        y = curY;
-        if(model.attributes.movesLeftAndRight && x >= 0 && x <= 7 && !this.checkUDRLBlocked(curX,x,RLBlocks,'x')){ 
+        
+        y = curY, x = curX-i;
+        if(model.attributes.movesLeftAndRight && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,RLBlocks,'x')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ RLBlocks.push(res); }
         }
         // diagonal movements
         // first check that the square is on the board
-        x = curX+i;
-        y = curY+i;
-        if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7){ 
-          this.checkAndMakeValidMove(x,y, validMoves);
+        
+        y = curY+i, x = curX+i;
+        if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,PSBlocks,'x')){ 
+          var res = this.checkAndMakeValidMove(x,y, validMoves);
+          if(res.blocked){ PSBlocks.push(res); }
         }
-        x = curX-i;
-        y = curY-i;
-        if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7){ 
-          this.checkAndMakeValidMove(x,y, validMoves);
+       
+        y = curY-i, x = curX-i;
+        if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,PSBlocks,'x')){ 
+          var res = this.checkAndMakeValidMove(x,y, validMoves);
+          if(res.blocked){ PSBlocks.push(res); }
         }
         // diagonal movements
         // first check that the square is on the board
-        x = curX+i;
-        y = curY-i;
-        if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7){ 
-          this.checkAndMakeValidMove(x,y, validMoves);
+        
+        y = curY-i, x = curX+i;
+        if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,NSBlocks,'x')){ 
+          var res = this.checkAndMakeValidMove(x,y, validMoves);
+          if(res.blocked){ NSBlocks.push(res); }
         }
-        x = curX-i;
-        y = curY+i;
-        if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7){ 
-          this.checkAndMakeValidMove(x,y, validMoves);
+        
+        y = curY+i, x = curX-i;
+        if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,NSBlocks,'x')){ 
+          var res = this.checkAndMakeValidMove(x,y, validMoves);
+          if(res.blocked){ NSBlocks.push(res); }
         }
+
       };
 
       return validMoves;
     },
 
-    checkUDRLBlocked: function(cur, next, blocks, toCheck){
+    checkBlocked: function(cur, next, blocks, toCheck){
       for (var i = 0; i < blocks.length; i++) {
         if( (cur < blocks[i][toCheck] && blocks[i][toCheck] < next) ||
             (cur > blocks[i][toCheck] && blocks[i][toCheck] > next) ){
