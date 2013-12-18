@@ -1,23 +1,18 @@
-define(['backbone','marionette','hbs!templates/piece'], function(Backbone, Marionette, piecetemplate){
+define(['jqueryui','backbone','marionette','hbs!templates/piece'], function(JqueryUI, Backbone, Marionette, piecetemplate){
   var PieceView = Backbone.Marionette.ItemView.extend({
-    // template: piecetemplate,
     className: 'center',
 
    initialize: function(){
       this.render();
-    },
-
-    events: {
-      'dragstart': 'highlightSquares',
-      'dragStart': 'onDrag',
-      'dragend': 'dropped'
+      // app.vent()
     },
 
     onDrag: function(e){
       console.log("someone's dragging me!");
     },
 
-    highlightSquares: function(){
+    highlightSquares: function(e, ui){
+      console.log(e,ui)
       var moveableSquares = this.model.canMoveTo();
       for (var i = 0; i < moveableSquares.length; i++) {
         var square = this.findSquare(moveableSquares[i][0], moveableSquares[i][1]);
@@ -57,8 +52,15 @@ define(['backbone','marionette','hbs!templates/piece'], function(Backbone, Mario
 
     render: function(){
       //use jquery to find the correct square...
-      this.$el.html('<img draggable="true" src="'+this.model.attributes.img_src+'"/>');
+      this.$el.html('<img src="'+this.model.attributes.img_src+'"/>');
       this.findSquare().append(this.$el);
+
+      this.$el.draggable({
+        containment: '.GameBoard',
+        stop: _.bind(this.dropped, this),
+        start: _.bind(this.highlightSquares, this)
+        // snap: '.GameSquare'
+      });
     }
 
   });

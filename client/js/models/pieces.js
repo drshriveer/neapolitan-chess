@@ -1,4 +1,4 @@
-define(['backbone', 'marionette', 'models/piece'], function(Backbone, Marionette, Piece){
+define(['backbone', 'marionette', 'models/piece', 'views/pieceView'], function(Backbone, Marionette, Piece, PieceView){
 
 // the collection!
   var Pieces = Backbone.Collection.extend({
@@ -12,6 +12,12 @@ define(['backbone', 'marionette', 'models/piece'], function(Backbone, Marionette
         this.add(new Piece({x:i, y:pawn_row,type:'pawn', color:color, canMove:true}));
         this.add(new Piece({x:i, y:other_row,type:rowTypes[i], color:color, canMove:true}));
       };
+    },
+
+    init: function(){
+      this.each(function(model){
+        new PieceView({model:model});
+      });
     }
 
   });

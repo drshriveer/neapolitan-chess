@@ -104,6 +104,7 @@ define(['app', 'backbone', 'marionette'], function(app, Backbone, Marionette){
       this.attributes.movesDiagonally = typeAttributes[this.attributes.type].movesDiagonally;
       this.attributes.movementLimit = typeAttributes[this.attributes.type].movementLimit || 7;
       this.attributes.img_src = typeAttributes[this.attributes.type].img_src[this.attributes.color];
+      this.attributes.uid = (new Date()).valueOf().toString(11) + '-' + (Math.random()*100000000).toString(24);
     },
 
     setPos: function(x,y){

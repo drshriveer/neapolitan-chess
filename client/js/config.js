@@ -10,7 +10,8 @@ require.config({
     handlebars: 'libs/hbs/Handlebars',
     hbs: 'libs/hbs/hbs',
     i18nprecompile: 'libs/hbs/hbs/i18nprecompile',
-    json2: 'libs/hbs/hbs/json2'
+    json2: 'libs/hbs/hbs/json2',
+    jqueryui: 'libs/jqueryui/ui/jquery-ui'
   },
 
   shim : {

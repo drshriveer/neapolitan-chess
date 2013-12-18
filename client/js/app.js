@@ -1,4 +1,4 @@
-define(['backbone', 'marionette', 'models/pieces','views/pieceView'], function( Backbone, Marionette, Pieces, PieceView){
+define(['backbone', 'marionette', 'models/pieces'], function( Backbone, Marionette, Pieces){
   "use strict"
 
   var app = new Backbone.Marionette.Application;
@@ -25,13 +25,7 @@ define(['backbone', 'marionette', 'models/pieces','views/pieceView'], function( 
     var pz = new Pieces();
     pz.makeTeam("white", 1, 0);
     pz.makeTeam("black", 6, 7);
-
-    // console.log("all them beautiful pieces:", pieces);
-    // new PiecesView(pz);
-    pz.each(function(model){
-      new PieceView({model:model});
-    });
-
+    pz.init();
   });
 
   return app;
