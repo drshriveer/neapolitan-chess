@@ -9,24 +9,22 @@ define(['jqueryui','backbone','marionette','hbs!templates/piece', 'app'], functi
         start: _.bind(this.highlightSquares, this)
         // snap: '.GameSquare'
       });
-
       this.render();
-      // this.attributes['data-uid'] = this.model.attributes.uid;
-      // debugger;
-      // console.log('the event: ','dropped:'+this.model.attributes.uid);
+
       app.vent.on('dropped:'+this.model.attributes.uid, this.moveToSquare, this);
+      app.vent.on('moved:'+this.model.attributes.uid, this.render, this);
     },
 
     moveToSquare: function(x,y){
       this.removeHighlights();
-      console.log("the xy is ", x, y);
-      console.log("hooray!")
+      console.log("move to ", x, y);
       if(this.model.isValidMove(x,y)){
-        console.log('its a valid move');
-        this.model.moveTo(x,y);
+        console.log('its a valid move... moving piece..');
+        this.model.setPos(x,y);
+      }else{
+        console.log('cannot move here, resetting...');
         this.render();
       }
-      this.render();
     },
 
     highlightSquares: function(e, ui){
@@ -54,7 +52,11 @@ define(['jqueryui','backbone','marionette','hbs!templates/piece', 'app'], functi
 
     render: function(){
       //use jquery to find the correct square...
-      this.$el.html('<img data-uid="'+this.model.attributes.uid+'" src="'+this.model.attributes.img_src+'"/>');
+      var uid = this.model.attributes.uid;
+      var img_src = this.model.attributes.img_src;
+      //reset style:
+      this.$el.attr({style:'position: relative'});      
+      this.$el.html('<img data-uid="'+uid+'" src="'+img_src+'"/>');
       this.findSquare().append(this.$el);
     }
 
