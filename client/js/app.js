@@ -1,4 +1,4 @@
-define(['backbone', 'marionette'], function( Backbone, Marionette){
+define(['backbone', 'marionette', 'models/pieces','views/pieceView'], function( Backbone, Marionette, Pieces, PieceView){
   "use strict"
 
   var app = new Backbone.Marionette.Application;
@@ -22,16 +22,17 @@ define(['backbone', 'marionette'], function( Backbone, Marionette){
   });
 
   app.vent.on("startGame", function(e){
-    // start the bloody game!
-    // first think about loading the collection of pieces
-    //  with all the correct attributes
-    //  then add them to the sheet with their own listenrs...
-    
-  });
+    var pz = new Pieces();
+    pz.makeTeam("white", 1, 0);
+    pz.makeTeam("black", 6, 7);
 
-  app.loadColorAtRows = function(pwan_row, other_row, color){
-    for()
-  };
+    // console.log("all them beautiful pieces:", pieces);
+    // new PiecesView(pz);
+    pz.each(function(model){
+      new PieceView({model:model});
+    });
+
+  });
 
   return app;
 

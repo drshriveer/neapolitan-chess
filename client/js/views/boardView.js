@@ -3,10 +3,10 @@ define(['backbone','marionette', 'views/squareView'], function(Backbone, Marione
 
   var BoardView = Backbone.Marionette.CollectionView.extend({
     itemView: SquareView,
+    tagName: 'table',
+    className: 'GameBoard',
 
     render: function(junk){
-      var $table = $('<table></table>');
-      $table.append('<tr>')
 
       for (var i = 0; i < 9; i++) {
         var $row = $('<tr></tr>');
@@ -14,10 +14,9 @@ define(['backbone','marionette', 'views/squareView'], function(Backbone, Marione
           var model = this.collection.models[i*9+j];
           $row.append(new SquareView({model: model}).$el);
         };
-       $table.append($row);
+       this.$el.append($row);
       };
-
-      this.$el.append($table);
+      
     }
 
   });

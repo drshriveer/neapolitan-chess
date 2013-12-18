@@ -1,4 +1,4 @@
-define(['app','marionette','backbone'], function(app, Backbone, Marionette){
+define(['app', 'backbone', 'marionette'], function(app, Backbone, Marionette){
 
   // static variable setup;
   var typeAttributes = {
@@ -26,6 +26,7 @@ define(['app','marionette','backbone'], function(app, Backbone, Marionette){
       }
     },
     chameleon: {
+      movesDiagonally: true,
       img_src: {
         black: "images/pieces/Black_B.png",
         blue: "images/pieces/Blue_B.png",
@@ -36,6 +37,7 @@ define(['app','marionette','backbone'], function(app, Backbone, Marionette){
       }
     },
     retractor: {
+      movesDiagonally: true,
       img_src: {
         black: "images/pieces/Black_Q.png",
         blue: "images/pieces/Blue_Q.png",
@@ -47,6 +49,7 @@ define(['app','marionette','backbone'], function(app, Backbone, Marionette){
     },
     king: {
       movementLimit: 1,
+      movesDiagonally: true,
       img_src: {
         black: "images/pieces/Black_K.png",
         blue: "images/pieces/Blue_K.png",
@@ -57,6 +60,7 @@ define(['app','marionette','backbone'], function(app, Backbone, Marionette){
       }
     },
     sychronizer: {
+      movesDiagonally: true,
       img_src: {
         black: "images/pieces/Black_R.png",
         blue: "images/pieces/Blue_R.png",
@@ -67,6 +71,7 @@ define(['app','marionette','backbone'], function(app, Backbone, Marionette){
       }
     },
     jumper: {
+      movesDiagonally: true,
       img_src: {
         black: "images/pieces/Black_N.png",
         blue: "images/pieces/Blue_N.png",
@@ -84,6 +89,7 @@ define(['app','marionette','backbone'], function(app, Backbone, Marionette){
       color: 'black',
       x: 0,
       y: 0,
+      canMove: true,
       movesDiagonally: true,
       movesForwardAndBack: true,
       movesLeftAndRight: true,
@@ -95,23 +101,19 @@ define(['app','marionette','backbone'], function(app, Backbone, Marionette){
     initialize: function(options){
       //options expects: 
       // options.x, options.y, options.type, options.color
-      this.x = options.x;
-      this.y = options.y;
-      this.type = options.type;
-      this.color = options.color;
-      this.movesDiagonally = typeAttributes[this.type].movesDiagonally;
-      this.movementLimit = typeAttributes[this.type].movementLimit;
-      this.img_src = typeAttributes[this.type].img_src[this.color];
+      this.attributes.movesDiagonally = typeAttributes[this.attributes.type].movesDiagonally;
+      this.attributes.movementLimit = typeAttributes[this.attributes.type].movementLimit || 7;
+      this.attributes.img_src = typeAttributes[this.attributes.type].img_src[this.attributes.color];
     },
 
     setPos: function(x,y){
-      this.x = x || this.x;
-      this.y = y || this.y;
+      this.attributes.x = x || this.attributes.x;
+      this.attributes.y = y || this.attributes.y;
       //trigger movement?
     },
 
     getPos: function(){
-      return {'x':this.x, 'y':this.y};
+      return {'x':this.attributes.x, 'y':this.attributes.y};
     },
 
     moveTo: function(x,y){
@@ -124,7 +126,11 @@ define(['app','marionette','backbone'], function(app, Backbone, Marionette){
 
     isValidMove: function(x,y){
       var okayMoves = this.canMoveTo();
-      if(okayMoves[y][x]){return true;}
+      for (var i = 0; i < okayMoves.length; i++) {
+        if(okayMoves[i][0] === x && okayMoves[i][1] === y){
+          return true;
+        }
+      };
       return false;
     },
 
@@ -140,33 +146,37 @@ define(['app','marionette','backbone'], function(app, Backbone, Marionette){
     },
 
     canMoveTo: function(){
-      var board = Piece.makeBlankBoard();
+      // var board = Piece.makeBlankBoard();
+      var validPairs = [];
 
-      for (var i = -this.movementLimit; i <= this.movementLimit; i++) {
-
+      for (var i = -this.attributes.movementLimit; i <= this.attributes.movementLimit; i++) {
         // foward and backward movements
         // first check that the square is on the board
-        if(this.movesForwardAndBack && this.y+i >= 0 && this.y+i <= 7){ 
-          board[this.y+i][this.x] = true;
+        if(this.attributes.movesForwardAndBack && this.attributes.y+i >= 0 && this.attributes.y+i <= 7){ 
+          // board[this.attributes.y+i][this.attributes.x] = true;
+          validPairs.push([this.attributes.x, this.attributes.y+i]);
         }
         // right and left movements
         // first check that the square is on the board
-        if(this.movesLeftAndRight && this.x+i >= 0 && this.x+i <= 7){ 
-          board[this.y][this.x+i] = true;
+        if(this.attributes.movesLeftAndRight && this.attributes.x+i >= 0 && this.attributes.x+i <= 7){ 
+          validPairs.push([this.attributes.x+i, this.attributes.y]);
+          // board[this.attributes.y][this.attributes.x+i] = true;
         }
         // diagonal movements
         // first check that the square is on the board
-        if(this.movesDiagonally && this.y+i >= 0 && this.y+i <= 7 && this.x+i >= 0 && this.x+i <= 7){ 
-          board[this.y+i][this.x+i] = true;
+        if(this.attributes.movesDiagonally && this.attributes.y+i >= 0 && this.attributes.y+i <= 7 && this.attributes.x+i >= 0 && this.attributes.x+i <= 7){ 
+          validPairs.push([this.attributes.x+i, this.attributes.y+i]);
+          // board[this.attributes.y+i][this.attributes.x+i] = true;
         }
         // diagonal movements
         // first check that the square is on the board
-        if(this.movesDiagonally && this.y-i >= 0 && this.y-i <= 7 && this.x+i >= 0 && this.x+i <= 7){ 
-          board[this.y-i][this.x+i] = true;
+        if(this.attributes.movesDiagonally && this.attributes.y-i >= 0 && this.attributes.y-i <= 7 && this.attributes.x+i >= 0 && this.attributes.x+i <= 7){ 
+          validPairs.push([this.attributes.x+i, this.attributes.y-i]);
+          // board[this.attributes.y-i][this.attributes.x+i] = true;
         }
       };
 
-      return board;
+      return validPairs;
     }
 
   });
