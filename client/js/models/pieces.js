@@ -1,8 +1,17 @@
-define(['backbone', 'marionette', 'models/piece', 'views/pieceView'], function(Backbone, Marionette, Piece, PieceView){
+define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], function(app, Backbone, Marionette, Piece, PieceView){
 
 // the collection!
   var Pieces = Backbone.Collection.extend({
     model: Piece,
+
+    initialize: function(){
+      app.vent.on('pieceMoved', this.refreshCaptureZones, this);
+    },
+
+    refreshCaptureZones: function(){
+      this.captureZones = this.calculateCaptureZones();
+      app.vent.trigger('highlightAttacks', this.captureZones);
+    },
 
     makeTeam: function(color, pawn_row, other_row){
       // Build Pawns
@@ -124,9 +133,14 @@ define(['backbone', 'marionette', 'models/piece', 'views/pieceView'], function(B
       //find and concat the capture zones made by pawns
       captureZones = captureZones.concat(this.calcPawnCaptures("white"));
       captureZones = captureZones.concat(this.calcPawnCaptures("black"));
+      // find and concat the capture zones made by retractors
+      captureZones = captureZones.concat(this.calcRetractorCaptures("white"));
+      captureZones = captureZones.concat(this.calcRetractorCaptures("black"));
+      // 
 
       return captureZones;
     },
+
     calcPawnCaptures: function(color){
       var collect = this;
       var pawnList = collect.where({type:"pawn",color:color});
@@ -162,12 +176,52 @@ define(['backbone', 'marionette', 'models/piece', 'views/pieceView'], function(B
           }
         });
       };
-
-      console.log("checkingPawns", captureZones)
-      // checker(pawnList.pop);
-      // captureZones.push({x:4,y:4});
+      // FIXME: pawns currently only tell you what you are guarding... 
+      // not what can be captured given the correct move.
       return captureZones;
     },
+
+    calcRetractorCaptures: function(color){
+      var collect = this;
+      var captureZones = [];
+      var pieces = this.where({type:"retractor", color:color});
+      // _(pieces).each(function(piece){
+      for(var i = 0; i < pieces.length; i++){
+        var piece = pieces[i];
+        var x = piece.attributes.x;
+        var y = piece.attributes.y;
+        // in the X direction
+        if(collect.findWhere({x: x+1, y: y}) && this.isValidMove(x-1,y,piece)){
+          captureZones.push({x:x+1, y:y, xf:x-1, yf:y});
+        }
+        if(collect.findWhere({x: x-1, y: y}) && this.isValidMove(x+1,y,piece)){
+          captureZones.push({x:x-1, y:y, xf:x+1, yf:y});
+        }
+        // in the Y direction
+        if(collect.findWhere({x: x, y: y+1}) && this.isValidMove(x,y-1,piece)){
+          captureZones.push({x:x, y:y+1, xf:x, yf:y-1});
+        }
+        if(collect.findWhere({x: x, y: y-1}) && this.isValidMove(x,y+1,piece)){
+          captureZones.push({x:x, y:y-1, xf:x, yf:y+1});
+        }
+        // in positive slope sideways direction 
+        if(collect.findWhere({x: x+1, y: y+1}) && this.isValidMove(x-1,y-1,piece)){
+          captureZones.push({x:x+1, y:y+1, xf:x-1, yf:y-1});
+        }
+        if(collect.findWhere({x: x-1, y: y-1}) && this.isValidMove(x+1,y+1,piece)){
+          captureZones.push({x:x-1, y:y-1, xf:x+1, yf:y+1});
+        }
+        // in negative slope sideways direction 
+        if(collect.findWhere({x: x-1, y: y+1}) && this.isValidMove(x+1,y-1,piece)){
+          captureZones.push({x:x-1, y:y+1, xf:x+1, yf:y-1});
+        }
+        if(collect.findWhere({x: x+1, y: y-1}) && this.isValidMove(x-1,y+1,piece)){
+          captureZones.push({x:x+1, y:y-1, xf:x-1, yf:y+1});
+        }
+      }
+
+      return captureZones;
+    }
 
   });
 

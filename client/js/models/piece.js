@@ -111,6 +111,8 @@ define(['app', 'backbone', 'marionette'], function(app, Backbone, Marionette){
       this.attributes.x = x;
       this.attributes.y = y;
       app.vent.trigger("moved:"+this.attributes.uid);
+      console.log("triggering change");
+      app.vent.trigger("pieceMoved");
       //trigger movement?
     },
 

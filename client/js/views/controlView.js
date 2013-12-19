@@ -14,7 +14,7 @@ define(['app', 'backbone','marionette', 'hbs!templates/control', 'models/pieces'
     },
     cheat: function(){
       //display helpers
-      app.vent.trigger('highlightAttacks',this.pz.calculateCaptureZones());
+      app.vent.trigger('highlightAttacks', this.pz.calculateCaptureZones() );
     },
     quit: function(){
       //reset game

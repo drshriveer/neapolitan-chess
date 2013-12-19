@@ -9,10 +9,8 @@ define(['app','backbone','marionette', 'views/squareView'], function(app, Backbo
     initialize: function(){
       app.vent.on('highlightValidMoves', this.highlightValidMoves, this);
       app.vent.on('unHighlightValidMoves', this.unHighlightValidMoves, this);
-
       app.vent.on('highlightAttacks', this.highlightAttacks, this);
       app.vent.on('unHighlightAttacks', this.unHighlightAttacks, this);
-
       app.vent.on('unHighlightAll', this.unHighlightAll, this);
     },
 
