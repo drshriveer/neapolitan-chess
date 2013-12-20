@@ -13,6 +13,11 @@ define(['jqueryui','backbone','marionette','hbs!templates/piece', 'app'], functi
 
       app.vent.on('dropped:'+this.model.attributes.uid, this.moveToSquare, this);
       app.vent.on('moved:'+this.model.attributes.uid, this.render, this);
+      
+      this.model.on('destroy', this.destroy, this);
+    },
+    destroy:function(){
+      this.remove();
     },
 
     moveToSquare: function(x,y){

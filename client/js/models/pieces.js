@@ -4,13 +4,17 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
   var Pieces = Backbone.Collection.extend({
     model: Piece,
 
-    initialize: function(){
-      app.vent.on('pieceMoved', this.refreshCaptureZones, this);
+    initialize: function(options){
+      //options expects {color: ,enemyColor};
+      // this.color = options.color || "white";
+      // this.enemyColor = options.enemyColor || "black";
+
+      // app.vent.on('pieceMoved', this.refreshCaptureZones, this);
     },
 
     refreshCaptureZones: function(){
-      this.captureZones = this.calculateCaptureZones();
-      app.vent.trigger('highlightAttacks', this.captureZones);
+      // this.captureZones = this.calculateCaptureZones();
+      // app.vent.trigger('highlightAttacks', this.captureZones);
     },
 
     makeTeam: function(color, pawn_row, other_row){
@@ -37,10 +41,24 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
       var x,y;
       var curX = model.attributes.x;
       var curY = model.attributes.y;
+      var color = model.attributes.color;
+      var enemyColor = (color === "black") ? "white" : "black";
       var UDBlocks = []; //up down blocks
       var RLBlocks = []; //right left block
       var PSBlocks = []; //positive slope blocks
       var NSBlocks = []; //negative slope blocks
+
+      if(this.isNextToAParalyzer(curX,curY,enemyColor)){
+        return validMoves;
+      }
+      // TODO: ADD MORE CHECKS: 
+      // NOT TRUE -- SACROFICES ARE ALLOWED
+        // CHECK THAT YOU DON'T MOVE THROUGH PAWN DEFENCES
+        // CHECK THAT YOU DON'T MOVE INTO SYNC/KING TRAP
+        // IF YOU ARE A PAWN, CHECK THAT YOU DON'T MOVE INTO A PAWN CHAMELION TRAP
+
+      // CHECK THAT YOU'RE NOT NEXT TO A PARALYIZER
+      // IF YOU ARE A JUMPER YOU CAN JUMP ONE OVER
 
       for (var i = 0; i <= model.attributes.movementLimit; i++) {
         // down movements        
@@ -96,6 +114,17 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
       return validMoves;
     },
 
+    isNextToAParalyzer: function(x,y,enemyColor){
+      var enempyParalyzer = this.findWhere({color:enemyColor,type:"paralyzer"});
+      if(!enempyParalyzer){ return false;}
+      var parX = enempyParalyzer.attributes.x;
+      var parY = enempyParalyzer.attributes.y;
+      if( Math.abs(parX - x) <= 1 && Math.abs(parY -y) <= 1 ){
+        return true;
+      }
+      return false;
+    },
+
     checkBlocked: function(cur, next, blocks, toCheck){
       for (var i = 0; i < blocks.length; i++) {
         if( (cur < blocks[i][toCheck] && blocks[i][toCheck] < next) ||
@@ -124,24 +153,72 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
       return false;
     },
 
-    //
-    // calculate capture zones
-    //
-    calculateCaptureZones: function(){
-      var captureZones = [];
 
-      //find and concat the capture zones made by pawns
-      captureZones = captureZones.concat(this.calcPawnCaptures("white"));
-      captureZones = captureZones.concat(this.calcPawnCaptures("black"));
-      // find and concat the capture zones made by retractors
-      captureZones = captureZones.concat(this.calcRetractorCaptures("white"));
-      captureZones = captureZones.concat(this.calcRetractorCaptures("black"));
-      // 
+    //
+    //   STARTS CHECKING FOR CAPTURES !!!
+    //
 
-      return captureZones;
+    checkForCaptures: function(x0,y0,model){
+      var curX = model.attributes.x;
+      var curY = model.attributes.y;
+      var type = model.attributes.type;
+      var color = model.attributes.color;
+      var enemyColor = (color === "black") ? "white" : "black";
+      var captures = [];
+
+      switch (type){
+        case 'pawn': 
+          captures = this.calcPawnCaptures(color, enemyColor);
+          break;
+        case 'retractor':
+          captures = this.calcRetractorCaptures(x0,y0,curX,curY,enemyColor,model);
+          console.log("found captures:  ", captures);
+          break;
+        case 'synchronizer':
+          // captures = this.calcQueenCaptures(color, enemyColor);
+          // console.log("found captures:  ", captures);
+          break;
+        case 'jumper':
+          // captures = this.calcQueenCaptures(color, enemyColor);
+          // console.log("found captures:  ", captures);
+          break;
+        case 'chameleon':
+          // captures = this.calcQueenCaptures(color, enemyColor);
+          // console.log("found captures:  ", captures);
+          break;
+        default:
+          break;
+      }
+
+      for (var i = 0; i < captures.length; i++) {
+        var toDelete = this.findWhere(captures[i]);
+        this.remove(toDelete);
+        toDelete.destroy();
+      };
     },
 
-    calcPawnCaptures: function(color){
+
+
+
+
+    // //
+    // // calculate capture zones
+    // //
+    // calculateCaptureZones: function(){
+    //   var captureZones = [];
+
+    //   //find and concat the capture zones made by pawns
+    //   captureZones = captureZones.concat(this.calcPawnCaptures("white"));
+    //   captureZones = captureZones.concat(this.calcPawnCaptures("black"));
+    //   // find and concat the capture zones made by retractors
+    //   captureZones = captureZones.concat(this.calcRetractorCaptures("white","black"));
+    //   captureZones = captureZones.concat(this.calcRetractorCaptures("black","white"));
+    //   // 
+
+    //   return captureZones;
+    // },
+
+    calcPawnCaptures: function(color, enemyColor){
       var collect = this;
       var pawnList = collect.where({type:"pawn",color:color});
       var captureZones = [];
@@ -155,73 +232,89 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
           var pX = p.attributes.x;
           var pY = p.attributes.y;
           if(pawnX+2 === pX && pawnY === pY){
-            if(collect.where({y:pawnY,x:pawnX+1, color:color}).length === 0){
+            if(collect.where({y:pawnY,x:pawnX+1, color:enemyColor}).length === 1){
               captureZones.push({y:pawnY,x:pawnX+1});
             }
           }
           if(pawnX-2 === pX && pawnY === pY){
-            if(collect.where({y:pawnY,x:pawnX-1, color:color}).length === 0){
+            if(collect.where({y:pawnY,x:pawnX-1, color:enemyColor}).length === 1){
               captureZones.push({y:pawnY,x:pawnX-1});
             }
           }
           if(pawnY+2 === pY && pawnX === pX){
-            if(collect.where({y:pawnY+1,x:pawnX, color:color}).length === 0){
+            if(collect.where({y:pawnY+1,x:pawnX, color:enemyColor}).length === 1){
               captureZones.push({y:pawnY+1,x:pawnX});
             }
           }
           if(pawnY-2 === pY && pawnX === pX){
-            if(collect.where({y:pawnY-1,x:pawnX, color:color}).length === 0){
+            if(collect.where({y:pawnY-1,x:pawnX, color:enemyColor}).length === 1){
               captureZones.push({y:pawnY-1,x:pawnX});
             }
           }
         });
       };
-      // FIXME: pawns currently only tell you what you are guarding... 
-      // not what can be captured given the correct move.
       return captureZones;
     },
 
-    calcRetractorCaptures: function(color){
-      var collect = this;
+    calcRetractorCaptures: function(x0, y0, curX, curY, enemyColor, piece){
+      var captures = [];
+      var possibles = this.calcRetractorThreats(x0, y0, enemyColor, piece);
+      // check if queen moved in the correct direction for those captures;
+      for (var i = 0; i < possibles.length; i++) {
+        var neededSlope = (possibles[i].xf - possibles[i].x)/(possibles[i].yf - possibles[i].y);
+        var moveSlope = (curX - x0)/(curY - y0);
+        if(neededSlope === moveSlope){
+          captures.push({x:possibles[i].x,y:possibles[i].y});
+        }
+      };
+      return captures;
+    },
+
+    calcRetractorThreats: function(x, y, enemyColor, piece){
       var captureZones = [];
-      var pieces = this.where({type:"retractor", color:color});
-      // _(pieces).each(function(piece){
-      for(var i = 0; i < pieces.length; i++){
-        var piece = pieces[i];
-        var x = piece.attributes.x;
-        var y = piece.attributes.y;
-        // in the X direction
-        if(collect.findWhere({x: x+1, y: y}) && this.isValidMove(x-1,y,piece)){
-          captureZones.push({x:x+1, y:y, xf:x-1, yf:y});
-        }
-        if(collect.findWhere({x: x-1, y: y}) && this.isValidMove(x+1,y,piece)){
-          captureZones.push({x:x-1, y:y, xf:x+1, yf:y});
-        }
-        // in the Y direction
-        if(collect.findWhere({x: x, y: y+1}) && this.isValidMove(x,y-1,piece)){
-          captureZones.push({x:x, y:y+1, xf:x, yf:y-1});
-        }
-        if(collect.findWhere({x: x, y: y-1}) && this.isValidMove(x,y+1,piece)){
-          captureZones.push({x:x, y:y-1, xf:x, yf:y+1});
-        }
-        // in positive slope sideways direction 
-        if(collect.findWhere({x: x+1, y: y+1}) && this.isValidMove(x-1,y-1,piece)){
-          captureZones.push({x:x+1, y:y+1, xf:x-1, yf:y-1});
-        }
-        if(collect.findWhere({x: x-1, y: y-1}) && this.isValidMove(x+1,y+1,piece)){
-          captureZones.push({x:x-1, y:y-1, xf:x+1, yf:y+1});
-        }
-        // in negative slope sideways direction 
-        if(collect.findWhere({x: x-1, y: y+1}) && this.isValidMove(x+1,y-1,piece)){
-          captureZones.push({x:x-1, y:y+1, xf:x+1, yf:y-1});
-        }
-        if(collect.findWhere({x: x+1, y: y-1}) && this.isValidMove(x-1,y+1,piece)){
-          captureZones.push({x:x+1, y:y-1, xf:x-1, yf:y+1});
-        }
+      // in the X direction
+      if(this.findWhere({x: x+1, y: y, color:enemyColor}) && this.isValidMove(x-1,y,piece)){
+        captureZones.push({x:x+1, y:y, xf:x-1, yf:y});
+      }
+      if(this.findWhere({x: x-1, y: y, color:enemyColor}) && this.isValidMove(x+1,y,piece)){
+        captureZones.push({x:x-1, y:y, xf:x+1, yf:y});
+      }
+      // in the Y direction
+      if(this.findWhere({x: x, y: y+1, color:enemyColor}) && this.isValidMove(x,y-1,piece)){
+        captureZones.push({x:x, y:y+1, xf:x, yf:y-1});
+      }
+      if(this.findWhere({x: x, y: y-1, color:enemyColor}) && this.isValidMove(x,y+1,piece)){
+        captureZones.push({x:x, y:y-1, xf:x, yf:y+1});
+      }
+      // in positive slope sideways direction 
+      if(this.findWhere({x: x+1, y: y+1, color:enemyColor}) && this.isValidMove(x-1,y-1,piece)){
+        captureZones.push({x:x+1, y:y+1, xf:x-1, yf:y-1});
+      }
+      if(this.findWhere({x: x-1, y: y-1, color:enemyColor}) && this.isValidMove(x+1,y+1,piece)){
+        captureZones.push({x:x-1, y:y-1, xf:x+1, yf:y+1});
+      }
+      // in negative slope sideways direction 
+      if(this.findWhere({x: x-1, y: y+1, color:enemyColor}) && this.isValidMove(x+1,y-1,piece)){
+        captureZones.push({x:x-1, y:y+1, xf:x+1, yf:y-1});
+      }
+      if(this.findWhere({x: x+1, y: y-1, color:enemyColor}) && this.isValidMove(x-1,y+1,piece)){
+        captureZones.push({x:x+1, y:y-1, xf:x-1, yf:y+1});
       }
 
       return captureZones;
     }
+
+    // calcSychronizerCaptures: function(color){
+    //   var king = this.findWhere({color:color,type:'king'});
+    //   var sychronizer = this.findWhere({color:color,type:'sychronizer'});
+    //   var kingX = king.attributes.x;
+    //   var kingY = king.attributes.y;
+    //   var sychronizerX = sychronizer.attributes.x;
+    //   var sychronizerY = sychronizer.attributes.y;
+    //   return [{x:kingX, y:sychronizerY}, {x:sychronizerX, y:kingY}];
+    //   // swap (a,b) (c,d) ===> (a,d) (c,b)
+
+    // }
 
   });
 

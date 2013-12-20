@@ -108,12 +108,14 @@ define(['app', 'backbone', 'marionette'], function(app, Backbone, Marionette){
     },
 
     setPos: function(x,y){
+      var x0 = this.attributes.x;
+      var y0 = this.attributes.y;
       this.attributes.x = x;
       this.attributes.y = y;
       app.vent.trigger("moved:"+this.attributes.uid);
-      console.log("triggering change");
-      app.vent.trigger("pieceMoved");
-      //trigger movement?
+      this.collection.checkForCaptures(x0,y0,this);
+      // console.log("triggering change");
+      // app.vent.trigger("pieceMoved");
     },
 
     getPos: function(){
