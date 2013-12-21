@@ -36,12 +36,12 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
     //
     // calculate valid moves
     //
-    canMoveTo: function(model){
+    calcValidMoves: function(attr, curX, curY){
       var validMoves = [];
       var x,y;
-      var curX = model.attributes.x;
-      var curY = model.attributes.y;
-      var color = model.attributes.color;
+      var curX = (typeof curX === "number") ? curX : attr.x;
+      var curY = (typeof curY === "number") ? curY : attr.y;
+      var color = attr.color;
       var enemyColor = (color === "black") ? "white" : "black";
       var UDBlocks = []; //up down blocks
       var RLBlocks = []; //right left block
@@ -60,52 +60,52 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
       // CHECK THAT YOU'RE NOT NEXT TO A PARALYIZER
       // IF YOU ARE A JUMPER YOU CAN JUMP ONE OVER
 
-      for (var i = 0; i <= model.attributes.movementLimit; i++) {
+      for (var i = 0; i <= attr.movementLimit; i++) {
         // down movements        
         y = curY+i, x = curX;
-        if(model.attributes.movesForwardAndBack && y >= 0 && y <= 7 && !this.checkBlocked(curY,y,UDBlocks,'y')){ 
+        if(attr.movesForwardAndBack && y >= 0 && y <= 7 && !this.checkBlocked(curY,y,UDBlocks,'y')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ UDBlocks.push(res); }
         }
         // up movements
         y = curY-i, x = curX;
-        if(model.attributes.movesForwardAndBack && y >= 0 && y <= 7 && !this.checkBlocked(curY,y,UDBlocks,'y')){ 
+        if(attr.movesForwardAndBack && y >= 0 && y <= 7 && !this.checkBlocked(curY,y,UDBlocks,'y')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ UDBlocks.push(res); }
         }
         // right movements
         y = curY, x = curX+i;
-        if(model.attributes.movesLeftAndRight && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,RLBlocks,'x')){ 
+        if(attr.movesLeftAndRight && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,RLBlocks,'x')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ RLBlocks.push(res); }
         }
         // left movements
         y = curY, x = curX-i;
-        if(model.attributes.movesLeftAndRight && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,RLBlocks,'x')){ 
+        if(attr.movesLeftAndRight && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,RLBlocks,'x')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ RLBlocks.push(res); }
         }
         // positive slope up & right movement        
         y = curY+i, x = curX+i;
-        if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,PSBlocks,'x')){ 
+        if(attr.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,PSBlocks,'x')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ PSBlocks.push(res); }
         }
         // positive slope down & left movement        
         y = curY-i, x = curX-i;
-        if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,PSBlocks,'x')){ 
+        if(attr.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,PSBlocks,'x')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ PSBlocks.push(res); }
         }
         // negative slope down & right movement
         y = curY-i, x = curX+i;
-        if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,NSBlocks,'x')){ 
+        if(attr.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,NSBlocks,'x')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ NSBlocks.push(res); }
         }
         // negative slope up & left movement
         y = curY+i, x = curX-i;
-        if(model.attributes.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,NSBlocks,'x')){ 
+        if(attr.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,NSBlocks,'x')){ 
           var res = this.checkAndMakeValidMove(x,y, validMoves);
           if(res.blocked){ NSBlocks.push(res); }
         }
@@ -136,23 +136,36 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
     },
 
     checkAndMakeValidMove: function(x, y, validMoves){
+      // FIXME:
+      // THIS IS WHERE THE QUEEN IS STOPPED
       var insquare = this.findWhere({x:x,y:y});
+      // THIS WILL STOP THE QUEEN FROM TAKING A PIECE IF 
+      // IT MOVES ONLY ONE SQUARE, BECAUSE THE SQUARE THAT IT NEED TO MOVE INTO
+      // WILL BE CONSIDERED A "block"
       if(insquare){
         return {blocked:true,x:x,y:y};
       }
       return validMoves.push({x:x, y:y});
     },
 
-    isValidMove: function(x,y,model){
-      var validMoves = this.canMoveTo(model);
+    isValidMove: function(model, x0, y0){
+      var validMoves = this.calcValidMoves(model.attributes, x0, y0);
       for (var i = 0; i < validMoves.length; i++) {
-        if(validMoves[i]['x'] === x && validMoves[i]['y'] === y){
+        if(validMoves[i]['x'] === x0 && validMoves[i]['y'] === y0){
           return true;
         }
       };
       return false;
     },
 
+    vmCheck: function(validMoves, x, y){
+      for (var i = 0; i < validMoves.length; i++) {
+        if(validMoves[i]['x'] === x0 && validMoves[i]['y'] === y0){
+          return true;
+        }
+      };
+      return false;
+    },
 
     //
     //   STARTS CHECKING FOR CAPTURES !!!
@@ -259,10 +272,10 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
     calcRetractorCaptures: function(x0, y0, curX, curY, enemyColor, piece){
       var captures = [];
       var possibles = this.calcRetractorThreats(x0, y0, enemyColor, piece);
+      var moveSlope = (curX - x0)/(curY - y0);
       // check if queen moved in the correct direction for those captures;
       for (var i = 0; i < possibles.length; i++) {
         var neededSlope = (possibles[i].xf - possibles[i].x)/(possibles[i].yf - possibles[i].y);
-        var moveSlope = (curX - x0)/(curY - y0);
         if(neededSlope === moveSlope){
           captures.push({x:possibles[i].x,y:possibles[i].y});
         }
@@ -271,33 +284,36 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
     },
 
     calcRetractorThreats: function(x, y, enemyColor, piece){
+      // FIX ME this is most likely where the issue is... 
       var captureZones = [];
+      var validMoves = this.calcValidMoves(piece.attributes, x, y);
+      debugger; 
       // in the X direction
-      if(this.findWhere({x: x+1, y: y, color:enemyColor}) && this.isValidMove(x-1,y,piece)){
+      if(this.findWhere({x: x+1, y: y, color:enemyColor}) && this.vmCheck(validMoves, x-1, y)){
         captureZones.push({x:x+1, y:y, xf:x-1, yf:y});
       }
-      if(this.findWhere({x: x-1, y: y, color:enemyColor}) && this.isValidMove(x+1,y,piece)){
+      if(this.findWhere({x: x-1, y: y, color:enemyColor}) && this.vmCheck(validMoves, x+1, y)){
         captureZones.push({x:x-1, y:y, xf:x+1, yf:y});
       }
       // in the Y direction
-      if(this.findWhere({x: x, y: y+1, color:enemyColor}) && this.isValidMove(x,y-1,piece)){
+      if(this.findWhere({x: x, y: y+1, color:enemyColor}) && this.vmCheck(validMoves, x, y-1)){
         captureZones.push({x:x, y:y+1, xf:x, yf:y-1});
       }
-      if(this.findWhere({x: x, y: y-1, color:enemyColor}) && this.isValidMove(x,y+1,piece)){
+      if(this.findWhere({x: x, y: y-1, color:enemyColor}) && this.vmCheck(validMoves, x, y+1)){
         captureZones.push({x:x, y:y-1, xf:x, yf:y+1});
       }
       // in positive slope sideways direction 
-      if(this.findWhere({x: x+1, y: y+1, color:enemyColor}) && this.isValidMove(x-1,y-1,piece)){
+      if(this.findWhere({x: x+1, y: y+1, color:enemyColor}) && this.vmCheck(validMoves, x-1, y-1)){
         captureZones.push({x:x+1, y:y+1, xf:x-1, yf:y-1});
       }
-      if(this.findWhere({x: x-1, y: y-1, color:enemyColor}) && this.isValidMove(x+1,y+1,piece)){
+      if(this.findWhere({x: x-1, y: y-1, color:enemyColor}) && this.vmCheck(validMoves, x+1, y+1)){
         captureZones.push({x:x-1, y:y-1, xf:x+1, yf:y+1});
       }
       // in negative slope sideways direction 
-      if(this.findWhere({x: x-1, y: y+1, color:enemyColor}) && this.isValidMove(x+1,y-1,piece)){
+      if(this.findWhere({x: x-1, y: y+1, color:enemyColor}) && this.vmCheck(validMoves, x+1, y-1)){
         captureZones.push({x:x-1, y:y+1, xf:x+1, yf:y-1});
       }
-      if(this.findWhere({x: x+1, y: y-1, color:enemyColor}) && this.isValidMove(x-1,y+1,piece)){
+      if(this.findWhere({x: x+1, y: y-1, color:enemyColor}) && this.vmCheck(validMoves, x-1, y+1)){
         captureZones.push({x:x+1, y:y-1, xf:x-1, yf:y+1});
       }
 

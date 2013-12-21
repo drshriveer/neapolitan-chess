@@ -13,7 +13,7 @@ define(['jqueryui','backbone','marionette','hbs!templates/piece', 'app'], functi
 
       app.vent.on('dropped:'+this.model.attributes.uid, this.moveToSquare, this);
       app.vent.on('moved:'+this.model.attributes.uid, this.render, this);
-      
+
       this.model.on('destroy', this.destroy, this);
     },
     destroy:function(){
@@ -22,18 +22,18 @@ define(['jqueryui','backbone','marionette','hbs!templates/piece', 'app'], functi
 
     moveToSquare: function(x,y){
       app.vent.trigger('unHighlightValidMoves');
-      console.log("move to ", x, y);
-      if(this.model.collection.isValidMove(x,y,this.model)){
-        console.log('its a valid move... moving piece..');
+      // console.log("move to ", x, y);
+      if(this.model.collection.isValidMove(this.model, x, y)){
+        // console.log('its a valid move... moving piece..');
         this.model.setPos(x,y);
       }else{
-        console.log('cannot move here, resetting...');
+        // console.log('cannot move here, resetting...');
         this.render();
       }
     },
 
     highlightSquares: function(e, ui){
-      var validMoves = this.model.collection.canMoveTo(this.model);
+      var validMoves = this.model.collection.calcValidMoves(this.model.attributes);
       app.vent.trigger('highlightValidMoves', validMoves);
       // console.log('validMoves', validMoves);
       // for (var i = 0; i < moveableSquares.length; i++) {
