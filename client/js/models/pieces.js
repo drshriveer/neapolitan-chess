@@ -19,7 +19,7 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
 
     makeTeam: function(color, pawn_row, other_row){
       // Build Pawns
-      var rowTypes = ["paralyzer","jumper","chameleon","retractor","king","chameleon","jumper","sychronizer"];
+      var rowTypes = ["paralyzer","jumper","chameleon","retractor","king","chameleon","jumper","synchronizer"];
       for (var i = 0; i < 8; i++) {
       // options.x, options.y, options.type, options.color
         this.add(new Piece({x:i, y:pawn_row,type:'pawn', color:color, canMove:true}));
@@ -64,49 +64,49 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
         // down movements        
         y = curY+i, x = curX;
         if(attr.movesForwardAndBack && y >= 0 && y <= 7 && !this.checkBlocked(curY,y,UDBlocks,'y')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves);
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:0,y:1});
           if(res.blocked){ UDBlocks.push(res); }
         }
         // up movements
         y = curY-i, x = curX;
         if(attr.movesForwardAndBack && y >= 0 && y <= 7 && !this.checkBlocked(curY,y,UDBlocks,'y')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves);
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:0,y:-1});
           if(res.blocked){ UDBlocks.push(res); }
         }
         // right movements
         y = curY, x = curX+i;
         if(attr.movesLeftAndRight && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,RLBlocks,'x')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves);
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:1,y:0});
           if(res.blocked){ RLBlocks.push(res); }
         }
         // left movements
         y = curY, x = curX-i;
         if(attr.movesLeftAndRight && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,RLBlocks,'x')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves);
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:-1,y:0});
           if(res.blocked){ RLBlocks.push(res); }
         }
         // positive slope up & right movement        
         y = curY+i, x = curX+i;
         if(attr.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,PSBlocks,'x')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves);
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:1,y:1});
           if(res.blocked){ PSBlocks.push(res); }
         }
         // positive slope down & left movement        
         y = curY-i, x = curX-i;
         if(attr.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,PSBlocks,'x')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves);
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:-1,y:-1});
           if(res.blocked){ PSBlocks.push(res); }
         }
         // negative slope down & right movement
         y = curY-i, x = curX+i;
         if(attr.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,NSBlocks,'x')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves);
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:1,y:-1});
           if(res.blocked){ NSBlocks.push(res); }
         }
         // negative slope up & left movement
         y = curY+i, x = curX-i;
         if(attr.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,NSBlocks,'x')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves);
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:-1,y:1});
           if(res.blocked){ NSBlocks.push(res); }
         }
       };
@@ -135,17 +135,34 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
       return false;
     },
 
-    checkAndMakeValidMove: function(x, y, validMoves){
-      // FIXME:
-      // THIS IS WHERE THE QUEEN IS STOPPED
-      var insquare = this.findWhere({x:x,y:y});
-      // THIS WILL STOP THE QUEEN FROM TAKING A PIECE IF 
-      // IT MOVES ONLY ONE SQUARE, BECAUSE THE SQUARE THAT IT NEED TO MOVE INTO
-      // WILL BE CONSIDERED A "block"
-      if(insquare){
-        return {blocked:true,x:x,y:y};
+    checkAndMakeValidMove: function(x, y, validMoves, attr, slopeDir){
+      var insquare = this.findWhere({x:x, y:y});
+      if(attr.type !== 'jumper' && attr.type !== 'chameleon'){
+        if(insquare){
+          return {blocked:true,x:x,y:y};
+        }
+        return validMoves.push({x:x, y:y});
+      }else{
+        if(insquare && insquare.attributes.color !== attr.color){ //catches when xy has enemy
+          // calc next square in slope direction
+          var next_x = x + slopeDir.x;
+          var next_y = y + slopeDir.y;
+          // block it if its out of bounds || if there is a piece behind it
+          if (next_x > 7 || next_x < 0 || next_y > 7 || next_y < 0 || this.findWhere({x:next_x,y:next_y})){
+            return {blocked:true,x:x,y:y};
+          }else{ //there is an empty space after the piece in question...
+          // add the empty space as valid move
+          // add a block one square beyond it,
+            validMoves.push({x:next_x, y:next_y});
+            return { blocked:true, x:next_x, y: next_y };
+          
+          }
+        } else if(insquare && insquare.attributes.color === attr.color){
+          return {blocked:true,x:x,y:y};
+        }else{ //no insquare piece
+          return validMoves.push({x:x, y:y});
+        }
       }
-      return validMoves.push({x:x, y:y});
     },
 
     isValidMove: function(model, x0, y0){
@@ -160,7 +177,7 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
 
     vmCheck: function(validMoves, x, y){
       for (var i = 0; i < validMoves.length; i++) {
-        if(validMoves[i]['x'] === x0 && validMoves[i]['y'] === y0){
+        if(validMoves[i]['x'] === x && validMoves[i]['y'] === y){
           return true;
         }
       };
@@ -171,28 +188,28 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
     //   STARTS CHECKING FOR CAPTURES !!!
     //
 
-    checkForCaptures: function(x0,y0,model){
-      var curX = model.attributes.x;
-      var curY = model.attributes.y;
+    checkForCaptures: function(x0,y0,curX,curY,model){
       var type = model.attributes.type;
       var color = model.attributes.color;
       var enemyColor = (color === "black") ? "white" : "black";
       var captures = [];
 
+      console.log("checking for captures by ", type);
       switch (type){
         case 'pawn': 
           captures = this.calcPawnCaptures(color, enemyColor);
           break;
         case 'retractor':
           captures = this.calcRetractorCaptures(x0,y0,curX,curY,enemyColor,model);
-          console.log("found captures:  ", captures);
           break;
         case 'synchronizer':
-          // captures = this.calcQueenCaptures(color, enemyColor);
-          // console.log("found captures:  ", captures);
+          captures = this.calcSynchronizerCaptures(color, enemyColor);
+          break;
+        case 'king':
+          captures = this.calcSynchronizerCaptures(color, enemyColor);
           break;
         case 'jumper':
-          // captures = this.calcQueenCaptures(color, enemyColor);
+          // captures = this.calcJumperCaptures(color, enemyColor);
           // console.log("found captures:  ", captures);
           break;
         case 'chameleon':
@@ -205,12 +222,12 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
 
       for (var i = 0; i < captures.length; i++) {
         var toDelete = this.findWhere(captures[i]);
-        this.remove(toDelete);
-        toDelete.destroy();
+        if(toDelete){
+          this.remove(toDelete);
+          toDelete.destroy();
+        }
       };
     },
-
-
 
 
 
@@ -287,7 +304,7 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
       // FIX ME this is most likely where the issue is... 
       var captureZones = [];
       var validMoves = this.calcValidMoves(piece.attributes, x, y);
-      debugger; 
+
       // in the X direction
       if(this.findWhere({x: x+1, y: y, color:enemyColor}) && this.vmCheck(validMoves, x-1, y)){
         captureZones.push({x:x+1, y:y, xf:x-1, yf:y});
@@ -318,19 +335,27 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
       }
 
       return captureZones;
+    },
+
+    calcSynchronizerCaptures: function(color, enemyColor){
+      var king = this.findWhere({color:color,type:'king'});
+      var synchronizer = this.findWhere({color:color,type:'synchronizer'});
+      var results = [];
+      if(!synchronizer){ return results; } //in case there is no synchronizer;
+      //check if they are enemy pieces
+      if(this.findWhere({color:enemyColor, x:king.attributes.x, y:synchronizer.attributes.y})){
+        results.push({x:king.attributes.x, y:synchronizer.attributes.y});
+      };
+      if(this.findWhere({color:enemyColor, x:synchronizer.attributes.x, y:king.attributes.y})){
+        results.push({x:synchronizer.attributes.x, y:king.attributes.y});
+      };
+
+      return results;
+    },
+
+    calcJumperCaptures: function(){
+
     }
-
-    // calcSychronizerCaptures: function(color){
-    //   var king = this.findWhere({color:color,type:'king'});
-    //   var sychronizer = this.findWhere({color:color,type:'sychronizer'});
-    //   var kingX = king.attributes.x;
-    //   var kingY = king.attributes.y;
-    //   var sychronizerX = sychronizer.attributes.x;
-    //   var sychronizerY = sychronizer.attributes.y;
-    //   return [{x:kingX, y:sychronizerY}, {x:sychronizerX, y:kingY}];
-    //   // swap (a,b) (c,d) ===> (a,d) (c,b)
-
-    // }
 
   });
 

@@ -1,0 +1,15 @@
+TODO:
+
+[ ] ADD MORE CHECKS: 
+
+[ ] Jumper captures
+  [ ] IF YOU ARE A JUMPER YOU CAN JUMP ONE OVER
+
+[ ] make a block after the pawn defences, but allow to move into trap
+[ ] check if you move into a sync/pawn trap
+[ ] if you're a pawn... or sync also check for moving into a chamelion trap
+  [ ] check for multiple pieces being captured at a time.
+[ ] CHECK THAT YOU'RE NOT NEXT TO A PARALYIZER
+
+[ ] start button must switch to stop & reset board on stop
+[ ] change 'turn on cheating' to turn on/off help

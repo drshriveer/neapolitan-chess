@@ -59,7 +59,7 @@ define(['app', 'backbone', 'marionette'], function(app, Backbone, Marionette){
         yellow: "images/pieces/Yellow_K.png"
       }
     },
-    sychronizer: {
+    synchronizer: {
       movesDiagonally: true,
       img_src: {
         black: "images/pieces/Black_R.png",
@@ -108,12 +108,22 @@ define(['app', 'backbone', 'marionette'], function(app, Backbone, Marionette){
     },
 
     setPos: function(x,y){
+      var moveFirst = ["pawn","king","synchronizer","paralyzer","chameleon", "jumper"];
+      var moveLast = ["retractor"];
       var x0 = this.attributes.x;
       var y0 = this.attributes.y;
-      this.attributes.x = x;
-      this.attributes.y = y;
+      if( _(moveFirst).contains(this.attributes.type) ){
+        this.attributes.x = x;
+        this.attributes.y = y;
+      }
+      this.collection.checkForCaptures(x0,y0,x,y,this);
+      if( _(moveLast).contains(this.attributes.type) ){
+        this.attributes.x = x;
+        this.attributes.y = y;
+      }
+
       app.vent.trigger("moved:"+this.attributes.uid);
-      this.collection.checkForCaptures(x0,y0,this);
+
       // console.log("triggering change");
       // app.vent.trigger("pieceMoved");
     },
