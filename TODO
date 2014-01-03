@@ -2,8 +2,11 @@ TODO:
 
 [ ] ADD MORE CHECKS: 
 
-[ ] Jumper captures
-  [ ] IF YOU ARE A JUMPER YOU CAN JUMP ONE OVER
+[√] Jumper captures
+  [√] IF YOU ARE A JUMPER YOU CAN JUMP ONE OVER
+
+[ ] FIX BUG: cannot move into square blocked by paralyzer (even though it says its a valid move)
+
 
 [ ] make a block after the pawn defences, but allow to move into trap
 [ ] check if you move into a sync/pawn trap

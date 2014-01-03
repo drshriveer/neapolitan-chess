@@ -209,8 +209,8 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
           captures = this.calcSynchronizerCaptures(color, enemyColor);
           break;
         case 'jumper':
-          // captures = this.calcJumperCaptures(color, enemyColor);
-          // console.log("found captures:  ", captures);
+          captures = this.calcJumperCaptures(x0,y0,curX,curY,enemyColor);
+          console.log("found captures:  ", captures);
           break;
         case 'chameleon':
           // captures = this.calcQueenCaptures(color, enemyColor);
@@ -353,8 +353,51 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
       return results;
     },
 
-    calcJumperCaptures: function(){
-
+    calcJumperCaptures: function(x0, y0, curX, curY, enemyColor){
+      var moveSlope = (curX - x0)/(curY - y0);
+      var results = [];
+      if(curX - x0 === 0 && curY > y0){ //moves DOWN
+        var enemyPiece = this.findWhere({x:curX,y:curY-1,color:enemyColor});
+        if(enemyPiece){
+          results.push({x:curX,y:curY-1});
+        }
+      }else if(curX - x0 === 0 && curY < y0){ //moves UP
+        var enemyPiece = this.findWhere({x:curX,y:curY+1,color:enemyColor});
+        if(enemyPiece){
+          results.push({x:curX,y:curY+1});
+        }
+      }else if(curY - y0 === 0 && curX < x0){ //moves LEFT
+        var enemyPiece = this.findWhere({x:curX+1,y:curY,color:enemyColor});
+        if(enemyPiece){
+          results.push({x:curX+1,y:curY});
+        }
+      }else if(curY - y0 === 0 && curX > x0){ //moves RIGHT
+        var enemyPiece = this.findWhere({x:curX-1,y:curY,color:enemyColor});
+        if(enemyPiece){
+          results.push({x:curX-1,y:curY});
+        }
+      }else if(curX < x0 && curY > y0){ //moves LEFT DOWN
+        var enemyPiece = this.findWhere({x:curX+1,y:curY-1,color:enemyColor});
+        if(enemyPiece){
+          results.push({x:curX+1,y:curY-1});
+        }
+      }else if(curX < x0 && curY < y0){ //moves LEFT UP
+        var enemyPiece = this.findWhere({x:curX+1,y:curY+1,color:enemyColor});
+        if(enemyPiece){
+          results.push({x:curX+1,y:curY+1});
+        }
+      }else if(curX > x0 && curY > y0){ //moves RIGHT DOWN
+        var enemyPiece = this.findWhere({x:curX-1,y:curY-1,color:enemyColor});
+        if(enemyPiece){
+          results.push({x:curX-1,y:curY-1});
+        }
+      }else if(curX > x0 && curY < y0){ //moves RIGHT UP
+        var enemyPiece = this.findWhere({x:curX-1,y:curY+1,color:enemyColor});
+        if(enemyPiece){
+          results.push({x:curX-1,y:curY+1});
+        }
+      }
+      return results;
     }
 
   });
