@@ -47,11 +47,16 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
       var RLBlocks = []; //right left block
       var PSBlocks = []; //positive slope blocks
       var NSBlocks = []; //negative slope blocks
+      var pawnBlocks = this.calcPawnThreats(enemyColor); //find ENEMY pawn blocks
 
+      // this is buggy since it prevents a piece from moving into 
+      // a valid place ((ie: the trapped position))
       if(this.isNextToAParalyzer(curX,curY,enemyColor)){
         return validMoves;
       }
-      // TODO: ADD MORE CHECKS: 
+      // TODO: ADD MORE CHECKS:
+      // to check for sacrofices... first check for captures due to the move
+      // then check if the piece itself is captured.
       // NOT TRUE -- SACROFICES ARE ALLOWED
         // CHECK THAT YOU DON'T MOVE THROUGH PAWN DEFENCES
         // CHECK THAT YOU DON'T MOVE INTO SYNC/KING TRAP
@@ -64,49 +69,49 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
         // down movements        
         y = curY+i, x = curX;
         if(attr.movesForwardAndBack && y >= 0 && y <= 7 && !this.checkBlocked(curY,y,UDBlocks,'y')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:0,y:1});
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:0,y:1}, pawnBlocks);
           if(res.blocked){ UDBlocks.push(res); }
         }
         // up movements
         y = curY-i, x = curX;
         if(attr.movesForwardAndBack && y >= 0 && y <= 7 && !this.checkBlocked(curY,y,UDBlocks,'y')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:0,y:-1});
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:0,y:-1}, pawnBlocks);
           if(res.blocked){ UDBlocks.push(res); }
         }
         // right movements
         y = curY, x = curX+i;
         if(attr.movesLeftAndRight && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,RLBlocks,'x')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:1,y:0});
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:1,y:0}, pawnBlocks);
           if(res.blocked){ RLBlocks.push(res); }
         }
         // left movements
         y = curY, x = curX-i;
         if(attr.movesLeftAndRight && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,RLBlocks,'x')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:-1,y:0});
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:-1,y:0}, pawnBlocks);
           if(res.blocked){ RLBlocks.push(res); }
         }
         // positive slope up & right movement        
         y = curY+i, x = curX+i;
         if(attr.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,PSBlocks,'x')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:1,y:1});
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:1,y:1}, pawnBlocks);
           if(res.blocked){ PSBlocks.push(res); }
         }
         // positive slope down & left movement        
         y = curY-i, x = curX-i;
         if(attr.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,PSBlocks,'x')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:-1,y:-1});
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:-1,y:-1}, pawnBlocks);
           if(res.blocked){ PSBlocks.push(res); }
         }
         // negative slope down & right movement
         y = curY-i, x = curX+i;
         if(attr.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,NSBlocks,'x')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:1,y:-1});
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:1,y:-1}, pawnBlocks);
           if(res.blocked){ NSBlocks.push(res); }
         }
         // negative slope up & left movement
         y = curY+i, x = curX-i;
         if(attr.movesDiagonally && y >= 0 && y <= 7 && x >= 0 && x <= 7 && !this.checkBlocked(curX,x,NSBlocks,'x')){ 
-          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:-1,y:1});
+          var res = this.checkAndMakeValidMove(x,y, validMoves, attr, {x:-1,y:1}, pawnBlocks);
           if(res.blocked){ NSBlocks.push(res); }
         }
       };
@@ -135,8 +140,14 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
       return false;
     },
 
-    checkAndMakeValidMove: function(x, y, validMoves, attr, slopeDir){
+    checkAndMakeValidMove: function(x, y, validMoves, attr, slopeDir, pawnBlocks){
       var insquare = this.findWhere({x:x, y:y});
+      //first check for pawn blocks
+      if(this.containsPawnBlock(x,y,pawnBlocks)){
+        validMoves.push({x:x,y:y});
+        return {blocked:true, x: x, y: y};
+      }
+      //then check for legit movement
       if(attr.type !== 'jumper' && attr.type !== 'chameleon'){
         if(insquare){
           return {blocked:true,x:x,y:y};
@@ -163,6 +174,15 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
           return validMoves.push({x:x, y:y});
         }
       }
+    },
+
+    containsPawnBlock: function(x, y, pawnBlocks){
+      for (var i = 0; i < pawnBlocks.length; i++) {
+        if(pawnBlocks[i].x === x && pawnBlocks[i].y === y){
+          return true;
+        }
+      };
+      return false;
     },
 
     isValidMove: function(model, x0, y0){
@@ -280,6 +300,36 @@ define(['app','backbone', 'marionette', 'models/piece', 'views/pieceView'], func
             if(collect.where({y:pawnY-1,x:pawnX, color:enemyColor}).length === 1){
               captureZones.push({y:pawnY-1,x:pawnX});
             }
+          }
+        });
+      };
+      return captureZones;
+    },
+
+    calcPawnThreats: function(color){
+      var collect = this;
+      var pawnList = collect.where({type:"pawn", color:color});
+      var captureZones = [];
+      
+      while(pawnList.length > 0){
+        var pawn = pawnList.pop();
+        var pawnX = pawn.attributes.x;
+        var pawnY = pawn.attributes.y;
+
+        _(pawnList).each(function(p){
+          var pX = p.attributes.x;
+          var pY = p.attributes.y;
+          if(pawnX+2 === pX && pawnY === pY){
+            captureZones.push({y:pawnY,x:pawnX+1});
+          }
+          if(pawnX-2 === pX && pawnY === pY){
+            captureZones.push({y:pawnY,x:pawnX-1});
+          }
+          if(pawnY+2 === pY && pawnX === pX){
+            captureZones.push({y:pawnY+1,x:pawnX});
+          }
+          if(pawnY-2 === pY && pawnX === pX){
+            captureZones.push({y:pawnY-1,x:pawnX});
           }
         });
       };
