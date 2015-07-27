@@ -133,7 +133,7 @@ Piece.prototype = {
   },
 
   toString: function() {
-    return "["+this._type+"|"+this.player +"]";
+    return "["+this._type+"|P"+this.player.getNumber() +"]";
   }
 
 };

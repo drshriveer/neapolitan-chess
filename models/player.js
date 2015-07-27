@@ -23,7 +23,7 @@ Player.prototype.getUsername = function() {
 };
 
 Player.prototype.toString = function() {
-  return "[P" + this._number +
-        "|" + this._username +
-        "|" + this._color + "]";
+  return "P" + this._number +
+        ":" + this._username +
+        ":" + this._color;
 };

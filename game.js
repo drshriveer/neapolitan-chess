@@ -74,8 +74,8 @@ Game.prototype.printBoard = function() {
     var row = this.board[i];
     var rowString = "";
     for (var j = 0; j < row.length; j++) {
-      rowString += (row[j] == null) ? "[____________________]" : row[j];
-      rowString += "\t";
+      rowString += (row[j] == null) ? "[________]" : row[j];
+      rowString += "\t\t";
     }
     result += rowString + "\n";
   }
