@@ -13,6 +13,6 @@ Vector.prototype.equals = function(vector) {
          this.dx === vector.dx;
 };
 
-Vector.prototype.move = function(position, dx, dy) {
-  return new Vector(dx, position.x, dy, position.y);
+Vector.move = function(position, dx, dy) {
+  return new Vector(dx, position.x + dx, dy, position.y + dy);
 };

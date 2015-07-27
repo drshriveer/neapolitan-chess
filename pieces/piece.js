@@ -1,8 +1,7 @@
 // a basic piece
-var Piece = function(board, color, player, position) {
-  this._id = board.idGenerator;
+var Piece = function(board, player, position) {
+  this._id = board.idGenerator();
   this.board = board;
-  this.color = color;
   this.player = player;
   this.paralized = false;
   this.position = position.clone();
@@ -134,7 +133,7 @@ Piece.prototype = {
   },
 
   toString: function() {
-    return "["+this._type+"|P"+this.player +"]";
+    return "["+this._type+"|"+this.player +"]";
   }
 
 };

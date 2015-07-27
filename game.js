@@ -1,9 +1,8 @@
-Game = function(player1color, player2color) {
+Game = function(palyer1, player2) {
   this._id = this.idGenerator();
   this.board = this.emptyBoard();
   this.threats = this.emptyBoard();
-  this.pieces = this.newPieces(player1color,
-      player2color);
+  this.pieces = this.newPieces(palyer1, player2);
   this.placePieces();
   Events.call(this);
 };
@@ -29,16 +28,20 @@ Game.prototype.emptyBoard = function(){
   return board;
 };
 
-Game.prototype.newPieces = function(player1color, player2color) {
+Game.prototype.newPieces = function(player1, player2) {
   var result = [];
   // add pawns
   for (var i = 0; i < 7; i++) {
     result.push(new Pawn(this,
-        player1color, 1, new Position(i, 1)));
+        player1, new Position(i, 1)));
     result.push(new Pawn(this,
-        player2color, 2, new Position(i, 5)));
+        player2, new Position(i, 5)));
   }
-  // TODO add others  `1
+  // TODO: add others  `1
+  result.push(new Queen(this,
+      player1, new Position(3, 0)));
+  result.push(new Queen(this,
+      player2, new Position(3, 6)));
   return result;
 };
 
@@ -67,7 +70,7 @@ Game.prototype.getThreats = function(position) {
 Game.prototype.printBoard = function() {
   var result = "";
   for (var i = 0; i < this.board.length; i++) {
-    result += this.board[i].join("\t") + "\n";
+    result += this.board[i].join("\t") + "\n\n\n";
   }
   return  result;
 };
