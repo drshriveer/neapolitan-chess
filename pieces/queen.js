@@ -30,7 +30,7 @@ Queen.prototype.threats = function(board) {
 
   var result = [];
 
-  // TODO: TEST THIS
+  // TODO: TEST THIS MOAR
   for(var i = 0; i < potentialAttacks.length; i++) {
     var attackVector = potentialAttacks[i];
     if (attackVector.isOffBoard()) continue;
