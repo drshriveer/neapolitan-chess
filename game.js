@@ -69,8 +69,15 @@ Game.prototype.getThreats = function(position) {
 
 Game.prototype.printBoard = function() {
   var result = "";
+  // This is a stupid function. Need to make it smarter
   for (var i = 0; i < this.board.length; i++) {
-    result += this.board[i].join("\t") + "\n\n\n";
+    var row = this.board[i];
+    var rowString = "";
+    for (var j = 0; j < row.length; j++) {
+      rowString += (row[j] == null) ? "[____________________]" : row[j];
+      rowString += "\t";
+    }
+    result += rowString + "\n";
   }
   return  result;
 };
