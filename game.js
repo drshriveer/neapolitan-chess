@@ -76,5 +76,5 @@ Game.prototype.printBoard = function() {
 };
 
 Game.prototype.toString = function() {
-  return "Game-" + this.id;
+  return "Game-" + this._id;
 };

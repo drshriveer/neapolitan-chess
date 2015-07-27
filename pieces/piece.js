@@ -120,14 +120,14 @@ Piece.prototype = {
     return vectors;
   },
 
-  singleVector: function(xDirection, yDirection, limit) {
+  singleVector: function(dx, dy, limit) {
     var result = [];
       for (var i = 1; i <= limit; i++) {
-        var position = new Position(
-            this.position.x - i * xDirection,
-            this.position.y - i * yDirection);
-        if (position.isOffBoard()) break;
-        result.push(position);
+        var vector = new Vector(
+            dx, this.vector.x - i * dx,
+            dy, this.vector.y - i * dy);
+        if (vector.isOffBoard()) break;
+        result.push(vector);
       }
     return result;
   },

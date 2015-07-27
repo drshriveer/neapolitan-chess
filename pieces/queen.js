@@ -31,6 +31,7 @@ Queen.prototype.threats = function(board) {
   var result = [];
 
   // TODO: TEST THIS MOAR
+  //       it is possible that the vectors are the reverse directions
   for(var i = 0; i < potentialAttacks.length; i++) {
     var attackVector = potentialAttacks[i];
     if (attackVector.isOffBoard()) continue;
