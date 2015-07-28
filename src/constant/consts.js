@@ -17,3 +17,12 @@ var Threats = {
   PARALYZE: "PARALYZE"
 };
 
+var Colors = {
+  BLACK: "Black",
+  BROWN: "Brown",
+  BLUE: "Blue",
+  CLEAR_WHITE: "Clear_white",
+  WHITE: "White",
+  YELLOW: "Yellow"
+};
+

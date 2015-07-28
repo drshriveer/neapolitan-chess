@@ -12,7 +12,7 @@ Paralyzer.prototype._threatType = Threats.PARALYZE;
 
 /*** @Override */
 Paralyzer.prototype.getImgUrl = function() {
-  return "/images/pieces/" + this.player.getColor() + "_S.png"; //FIXME
+  return "/images/pieces/" + this.player.getColor() + "_UR.png";
 };
 
 /*** @Override */
