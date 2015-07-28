@@ -1,3 +1,11 @@
+/**
+* TODO:
+* 1) account for moving into a blocking trap if the object is a
+*    sacrificing move;
+* 2) after each move, reset paralysis;
+* 3)
+*/
+
 Game = function(palyer1, player2) {
   this._id = this.idGenerator();
   this.board = this.emptyBoard();
@@ -8,6 +16,31 @@ Game = function(palyer1, player2) {
 };
 
 mixin(Game.prototype, Events.prototype);
+
+Game.prototype.movePiece = function(piece, vector) {
+  // if piece.isParalyzed() alert("cannot move here")
+  // if piece === paralyzer reset paralysis
+  // move piece
+  // re-calculate threats
+};
+
+Game.prototype.getUserPiece = function(user, pieceType) {
+  // pieces.findWhere({user: user, _type: pieceType});
+  // return type requested
+};
+
+Game.prototype.getParalyzed = function() {
+  // pieces.findWhere({paralyzed: true});
+  // return type requested
+};
+
+Game.prototype.getPiece = function(position) {
+  return this.board[position.y][position.x];
+};
+
+Game.prototype.getThreats = function(position) {
+  return this.threats[position.y][position.x];
+};
 
 Game.prototype.idGenerator = function() {
   var _currentId = 0;
@@ -42,6 +75,12 @@ Game.prototype.newPieces = function(player1, player2) {
       player1, new Position(3, 0)));
   result.push(new Queen(this,
       player2, new Position(3, 6)));
+
+  result.push(new Paralyzer(this,
+      player1, new Position(0, 0)));
+  result.push(new Paralyzer(this,
+      player2, new Position(0, 6)));
+
   return result;
 };
 
@@ -54,17 +93,9 @@ Game.prototype.placePieces = function() {
 Game.prototype.placePiece = function(piece) {
   var position = piece.getPosition();
   if (this.getPiece(position) != null) {
-    return console.error("Piece already exists here!");
+    return console.error("Piece already exists here! ", position);
   }
   this.board[position.y][position.x] = piece;
-};
-
-Game.prototype.getPiece = function(position) {
-  return this.board[position.y][position.x];
-};
-
-Game.prototype.getThreats = function(position) {
-  return this.threats[position.y][position.x];
 };
 
 Game.prototype.printBoard = function() {

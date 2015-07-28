@@ -18,6 +18,8 @@ Queen.prototype.getImgUrl = function() {
 /*** @Override */
 Queen.prototype.threats = function(board) {
   if (this.paralized) return [];
+
+  // sorry for the confusion; these are 'backwards' vectors
   var potentialAttacks = [
       Vector.move(this.position, Direction.NONE, Direction.N),
       Vector.move(this.position, Direction.E,    Direction.NONE),
@@ -41,6 +43,7 @@ Queen.prototype.threats = function(board) {
         -attackVector.dx, -attackVector.dy);
     if (reverseVector.isOffBoard()) continue;
     var reverseDirectionPiece = this.board.getPiece(reverseVector);
+    var reverseDirectionThreats = this.board.getThreats(reverseVector);
     if (reverseDirectionPiece == null &&
         !this.player.equals(attackPiece.getPlayer())) {
       result.push(attackVector);

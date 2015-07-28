@@ -3,7 +3,7 @@ var Piece = function(board, player, position) {
   this._id = board.idGenerator();
   this.board = board;
   this.player = player;
-  this.paralized = false;
+  this.paralyzed = false;
   this.position = position.clone();
   Events.call(this);
 };
@@ -47,12 +47,12 @@ Piece.prototype = {
     return result;
   },
 
-  isParalized: function() {
-    return paralized;
+  isParalyzed: function() {
+    return this.paralyzed;
   },
 
-  setParalized: function(paralized) {
-    this.paralized = paralized;
+  setParalyzed: function(paralyzed) {
+    this.paralyzed = paralyzed;
   },
 
   getPosition: function() {

@@ -5,9 +5,9 @@ var Player = function(num, username, color){
 };
 
 Player.prototype.equals = function(player) {
-  return this._number === player.number &&
-        this._username === player.username &&
-        this._color === player.color;
+  return this._number === player._number &&
+        this._username === player._username &&
+        this._color === player._color;
 };
 
 Player.prototype.getNumber = function() {

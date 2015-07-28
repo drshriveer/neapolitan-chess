@@ -14,6 +14,6 @@ var Threats = {
   // Pawns
   BLOCKING_TRAP: "BLOCKING_TRAP",
   // Paralyzer
-  PARALIZE: "PARALIZE"
+  PARALYZE: "PARALYZE"
 };
 
