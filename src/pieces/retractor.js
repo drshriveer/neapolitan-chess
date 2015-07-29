@@ -37,13 +37,13 @@ Retractor.prototype.threats = function(board) {
   for(var i = 0; i < potentialAttacks.length; i++) {
     var attackVector = potentialAttacks[i];
     if (attackVector.isOffBoard()) continue;
-    var attackPiece = this.board.getPiece(attackVector);
+    var attackPiece = this.game.getPiece(attackVector);
     if (attackPiece == null) continue;
     var reverseVector = Vector.move(this.position,
         -attackVector.dx, -attackVector.dy);
     if (reverseVector.isOffBoard()) continue;
-    var reverseDirectionPiece = this.board.getPiece(reverseVector);
-    var reverseDirectionThreats = this.board.getThreats(reverseVector);
+    var reverseDirectionPiece = this.game.getPiece(reverseVector);
+    var reverseDirectionThreats = this.game.getThreats(reverseVector);
     if (reverseDirectionPiece == null &&
         !this.player.equals(attackPiece.getPlayer())) {
       result.push(attackVector);

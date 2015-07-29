@@ -1,4 +1,8 @@
 /** Constants */
+var BOARD_SIZE = 8;
+var CLOSE_ROW_START = 6;
+var FAR_ROW_START = 0;
+
 
 var Direction = {
   N:-1, S:1,

@@ -28,12 +28,12 @@ Pawn.prototype.threats = function(board) {
   for(var i = 0; i < attackPartners.length; i++) {
     var vector = attackPartners[i];
     if (vector.isOffBoard()) continue;
-    var piece = this.board.getPiece(vector);
+    var piece = this.game.getPiece(vector);
     if (piece == null) continue;
     if (this.getType() === piece.getType() &&
         this.player.equals(piece.getPlayer())) {
       var pos  = new Position(vector.x - vector.dx, vector.y - vector.dy);
-      if (this.board.getPiece(pos) != null) continue;
+      if (this.game.getPiece(pos) != null) continue;
       result.push(pos);
     }
   }

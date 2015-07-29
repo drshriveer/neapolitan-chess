@@ -1,7 +1,7 @@
 // a basic piece
-var Piece = function(board, player, position) {
-  this._id = board.idGenerator();
-  this.board = board;
+var Piece = function(game, player, position) {
+  this._id = game.idGenerator();
+  this.game = game;
   this.player = player;
   this.paralyzed = false;
   this.position = position.clone();
@@ -18,12 +18,12 @@ Piece.prototype = {
 
   // MUST OVERRIDE
   getImgUrl: function() {
-    console.error("You must override 'getImgUrl' method");
+    throw "You must override 'getImgUrl' method";
   },
 
   // MUST OVERRIDE
   threats: function() {
-    console.error("You must override 'threats' method");
+    throw "You must override 'threats' method";
   },
 
   // CAN OVERRIDE
@@ -34,8 +34,8 @@ Piece.prototype = {
       var vector = vectors[key];
       for (var i = 0; i < vector.length; i++) {
         var position = vector[i];
-        var piece = this.board.getPiece(position);
-        var threats = this.board.getThreats(position);
+        var piece = this.game.getPiece(position);
+        var threats = this.game.getThreats(position);
         if ( (piece !== null &&
              position.equals(piece.getPosition())) ||
             this.threats().contains(Threats.BLOCKING_TRAP)) {
@@ -77,13 +77,13 @@ Piece.prototype = {
 
   /**
    * Provides possible movement vectors based on
-   * moment rules assuming an empty board. Movement
+   * moment rules assuming an empty game. Movement
    * blocks due to traps or pieces should be done
    * in the canMoveTo function.
    */
   movementVectors: function() {
     if (this.movementRules == null) {
-      return console.error("movement rules are null");
+      throw "movement rules are null";
     }
     var vectors = {};
 
@@ -126,7 +126,7 @@ Piece.prototype = {
         var vector = new Vector(
             dx, this.vector.x - i * dx,
             dy, this.vector.y - i * dy);
-        if (vector.isOffBoard()) break;
+        if (vector.isOffgame()) break;
         result.push(vector);
       }
     return result;

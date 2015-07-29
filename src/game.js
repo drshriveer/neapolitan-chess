@@ -6,27 +6,45 @@
 * 3)
 */
 
-Game = function(palyer1, player2) {
-  this._id = this.idGenerator();
+Game = function(player1, player2) {
   this.board = this.emptyBoard();
   this.threats = this.emptyBoard();
-  this.pieces = this.newPieces(palyer1, player2);
+  this.pieces = [];
+  this.pieces = this.pieces.concat(this.newPieces(player1, CLOSE_ROW_START));
+  this.pieces = this.pieces.concat(this.newPieces(player2, FAR_ROW_START));
   this.placePieces();
+  this.turn = 1;
   Events.call(this);
 };
 
 mixin(Game.prototype, Events.prototype);
 
-Game.prototype.movePiece = function(piece, vector) {
-  // if piece.isParalyzed() alert("cannot move here")
-  // if piece === paralyzer reset paralysis
+Game.prototype.movePiece = function(player, piece, vector) {
+  if (!player.isPlayerTurn(turn)) {
+    return "It's not your turn to move.";
+  }
+  if (piece.isParalyzed()) {
+    return "This piece is paralyzed.";
+  }
+  this.resetParalasys();
   // move piece
   // re-calculate threats
+  this.turn++;
+  return "moved";
 };
 
-Game.prototype.getUserPiece = function(user, pieceType) {
+Game.prototype.resetParalasys = function() {
+  this.pieces.forEach(function(piece){
+    piece.setParalysis(false);
+  });
+};
+
+Game.prototype.getPlayerPiece = function(player, pieceType) {
   // pieces.findWhere({user: user, _type: pieceType});
-  // return type requested
+  return this.pieces.filter(function(piece) {
+    return piece.getType() === pieceType &&
+        piece.getPlayer.equals(player);
+  });
 };
 
 Game.prototype.getParalyzed = function() {
@@ -51,9 +69,9 @@ Game.prototype.idGenerator = function() {
 
 Game.prototype.emptyBoard = function(){
   var board = [];
-  for(var i = 0; i < 7; i++) {
+  for(var i = 0; i < BOARD_SIZE; i++) {
     var row = [];
-    for(var j = 0; j < 7; j++) {
+    for(var j = 0; j < BOARD_SIZE; j++) {
       row.push(null);
     }
     board.push(row);
@@ -61,25 +79,33 @@ Game.prototype.emptyBoard = function(){
   return board;
 };
 
-Game.prototype.newPieces = function(player1, player2) {
+Game.prototype.newPieces = function(player, startRow) {
+  if (startRow !== CLOSE_ROW_START &&
+      startRow !== FAR_ROW_START) throw "Not a valid start row";
   var result = [];
   // add pawns
-  for (var i = 0; i < 7; i++) {
+  for (var i = 0; i < BOARD_SIZE; i++) {
     result.push(new Pawn(this,
-        player1, new Position(i, 1)));
-    result.push(new Pawn(this,
-        player2, new Position(i, 5)));
+        player, new Position(i, startRow + 1)));
   }
-  // TODO: add others  `1
-  result.push(new Queen(this,
-      player1, new Position(3, 0)));
-  result.push(new Queen(this,
-      player2, new Position(3, 6)));
 
+  // TODO: uncomment
   result.push(new Paralyzer(this,
-      player1, new Position(0, 0)));
-  result.push(new Paralyzer(this,
-      player2, new Position(0, 6)));
+      player, new Position(0, startRow)));
+  // result.push(new Jumper(this,
+  //     player, new Position(1, startRow)));
+  // result.push(new Chameleon(this,
+  //     player, new Position(2, startRow)));
+  result.push(new Retractor(this,
+      player, new Position(3, startRow)));
+  // result.push(new King(this,
+  //     player, new Position(4, startRow)));
+  // result.push(new Chameleon(this,
+  //     player, new Position(5, startRow)));
+  // result.push(new Jumper(this,
+  //     player, new Position(6, startRow)));
+  result.push(new Synchronizer(this,
+      player, new Position(7, startRow)));
 
   return result;
 };
@@ -114,5 +140,5 @@ Game.prototype.printBoard = function() {
 };
 
 Game.prototype.toString = function() {
-  return "Game-" + this._id;
+  return "Game";
 };
