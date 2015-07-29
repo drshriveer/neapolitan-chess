@@ -1,22 +1,22 @@
-var Queen = function(board, player, position) {
+var Retractor = function(board, player, position) {
   Piece.apply(this, arguments);
   this.movementRules = new MovementRules(7, true, true, true);
 };
 
-Queen.prototype = Object.create(Piece.prototype);
-Queen.prototype.constructor = Queen;
+Retractor.prototype = Object.create(Piece.prototype);
+Retractor.prototype.constructor = Retractor;
 
 /*** @Override */
-Queen.prototype._type = "queen";
-Queen.prototype._threatType = Threats.ASSASINATE;
+Retractor.prototype._type = Pieces.RETRACTOR;
+Retractor.prototype._threatType = Threats.ASSASINATE;
 
 /*** @Override */
-Queen.prototype.getImgUrl = function() {
+Retractor.prototype.getImgUrl = function() {
   return "/images/pieces/" + this.player.getColor() + "_Q.png";
 };
 
 /*** @Override */
-Queen.prototype.threats = function(board) {
+Retractor.prototype.threats = function(board) {
   if (this.paralized) return [];
 
   // sorry for the confusion; these are 'backwards' vectors

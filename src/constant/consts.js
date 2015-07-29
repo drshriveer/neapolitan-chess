@@ -8,13 +8,13 @@ var Direction = {
 
 var Threats = {
   // Jumpers
-  ATTACK: "ATTACK",
+  ATTACK: "attack",
   // King, Synchronizer, Queen
-  ASSASINATE: "ASSASINATE",
+  ASSASSINATION: "assassination",
   // Pawns
-  BLOCKING_TRAP: "BLOCKING_TRAP",
+  TRAP: "trap",
   // Paralyzer
-  PARALYZE: "PARALYZE"
+  PARALYSIS: "paralysis"
 };
 
 var Colors = {
@@ -24,5 +24,14 @@ var Colors = {
   CLEAR_WHITE: "Clear_white",
   WHITE: "White",
   YELLOW: "Yellow"
+};
+
+var Pieces = {
+  CHAMELEON: "Chameleon",
+  KING: "King",
+  JUMPER: "Jumper",
+  PARALYZER: "Paralyzer",
+  PAWN: "Pawn",
+  RETRACTOR: "Retractor",
 };
 

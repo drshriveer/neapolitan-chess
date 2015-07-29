@@ -7,8 +7,8 @@ Pawn.prototype = Object.create(Piece.prototype);
 Pawn.prototype.constructor = Pawn;
 
 /*** @Override */
-Pawn.prototype._type = "pawn";
-Pawn.prototype._threatType = Threats.BLOCKING_TRAP;
+Pawn.prototype._type = Pieces.PAWN;
+Pawn.prototype._threatType = Threats.TRAP;
 
 /*** @Override */
 Pawn.prototype.getImgUrl = function() {

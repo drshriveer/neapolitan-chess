@@ -7,8 +7,8 @@ Paralyzer.prototype = Object.create(Piece.prototype);
 Paralyzer.prototype.constructor = Paralyzer;
 
 /*** @Override */
-Paralyzer.prototype._type = "paralyzer";
-Paralyzer.prototype._threatType = Threats.PARALYZE;
+Paralyzer.prototype._type = Pieces.PARALYZER;
+Paralyzer.prototype._threatType = Threats.PARALYSIS;
 
 /*** @Override */
 Paralyzer.prototype.getImgUrl = function() {
