@@ -12,6 +12,9 @@ mixin(Piece.prototype, Events.prototype);
 
 Piece.prototype = {
 
+  // CAN Override
+  _movementRules: new MovementRules(8, true, true, true),
+
   // MUST OVERRIDE
   _type: "none",
   _threatType: "none",
@@ -26,7 +29,7 @@ Piece.prototype = {
     throw "You must override 'threats' method";
   },
 
-  // CAN OVERRIDE
+  // CAN OVERRIDE (jumper})
   canMoveTo: function() {
     var vectors = this.movementVectors();
     var result = [];
@@ -36,9 +39,12 @@ Piece.prototype = {
         var position = vector[i];
         var piece = this.game.getPiece(position);
         var threats = this.game.getThreats(position);
-        if ( (piece !== null &&
-             position.equals(piece.getPosition())) ||
-            this.threats().contains(Threats.BLOCKING_TRAP)) {
+        if (piece == null &&
+            (threats.contains(Threats.TRAP) ||
+            threats.contains(Threats.PARALYSIS))) {
+          result.push(position);
+          break;
+        } else if (piece != null) {
           break;
         }
         result.push(position);
@@ -82,40 +88,40 @@ Piece.prototype = {
    * in the canMoveTo function.
    */
   movementVectors: function() {
-    if (this.movementRules == null) {
+    if (this._movementRules == null) {
       throw "movement rules are null";
     }
     var vectors = {};
 
-    if (this.movementRules.northSouth) {
+    if (this._movementRules.northSouth) {
       // add north vector
       vectors.N = this.singleVector(
-          Direction.NONE, Direction.N, this.movementRules.limit);
+          Direction.NONE, Direction.N, this._movementRules.limit);
       // add south vector
       vectors.S = this.singleVector(
-          Direction.NONE, Direction.S, this.movementRules.limit);
+          Direction.NONE, Direction.S, this._movementRules.limit);
     }
-    if (this.movementRules.eastWest) {
+    if (this._movementRules.eastWest) {
       // add east vector
       vectors.E = this.singleVector(
-          Direction.E, Direction.NONE, this.movementRules.limit);
+          Direction.E, Direction.NONE, this._movementRules.limit);
       // add west vector
       vectors.W = this.singleVector(
-          Direction.W, Direction.NONE, this.movementRules.limit);
+          Direction.W, Direction.NONE, this._movementRules.limit);
     }
-    if (this.movementRules.diagonal) {
+    if (this._movementRules.diagonal) {
       // add NW vector
       vectors.NW = this.singleVector(
-          Direction.W, Direction.N, this.movementRules.limit);
+          Direction.W, Direction.N, this._movementRules.limit);
       // add NE vector
       vectors.NE = this.singleVector(
-          Direction.E, Direction.N, this.movementRules.limit);
+          Direction.E, Direction.N, this._movementRules.limit);
       // add SW vector
       vectors.SW = this.singleVector(
-          Direction.W, Direction.S, this.movementRules.limit);
+          Direction.W, Direction.S, this._movementRules.limit);
       // add SE vector
       vectors.SE = this.singleVector(
-          Direction.E, Direction.S, this.movementRules.limit);
+          Direction.E, Direction.S, this._movementRules.limit);
     }
     return vectors;
   },
@@ -124,9 +130,9 @@ Piece.prototype = {
     var result = [];
       for (var i = 1; i <= limit; i++) {
         var vector = new Vector(
-            dx, this.vector.x - i * dx,
-            dy, this.vector.y - i * dy);
-        if (vector.isOffgame()) break;
+            dx, this.position.x - i * dx,
+            dy, this.position.y - i * dy);
+        if (vector.isOffBoard()) break;
         result.push(vector);
       }
     return result;

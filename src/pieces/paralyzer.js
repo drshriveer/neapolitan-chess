@@ -1,12 +1,12 @@
 var Paralyzer = function(board, player, position) {
   Piece.apply(this, arguments);
-  this.movementRules = new MovementRules(7, true, true, true);
 };
 
 Paralyzer.prototype = Object.create(Piece.prototype);
 Paralyzer.prototype.constructor = Paralyzer;
 
 /*** @Override */
+Paralyzer.prototype._movementRules = new MovementRules(8, true, true, false);
 Paralyzer.prototype._type = Pieces.PARALYZER;
 Paralyzer.prototype._threatType = Threats.PARALYSIS;
 
@@ -16,7 +16,7 @@ Paralyzer.prototype.getImgUrl = function() {
 };
 
 /*** @Override */
-Paralyzer.prototype.threats = function(board) {
+Paralyzer.prototype.threats = function() {
   if (this.paralized) return [];
   var potentialParalysis = [
       Vector.move(this.position, Direction.NONE, Direction.N),

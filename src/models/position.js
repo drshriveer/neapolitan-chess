@@ -18,5 +18,5 @@ Position.prototype.equals = function(position) {
 
 Position.prototype.isOffBoard = function(position) {
   return this.x < 0 || this.y < 0 ||
-      this.x > BOARD_SIZE || this.y > BOARD_SIZE;
+      this.x > BOARD_SIZE - 1 || this.y > BOARD_SIZE - 1;
 };

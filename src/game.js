@@ -10,8 +10,8 @@ Game = function(player1, player2) {
   this.board = this.emptyBoard();
   this.threats = this.emptyBoard();
   this.pieces = [];
-  this.pieces = this.pieces.concat(this.newPieces(player1, CLOSE_ROW_START));
-  this.pieces = this.pieces.concat(this.newPieces(player2, FAR_ROW_START));
+  this.pieces = this.pieces.concat(this.newPieces(player1));
+  this.pieces = this.pieces.concat(this.newPieces(player2));
   this.placePieces();
   this.turn = 1;
   Events.call(this);
@@ -43,7 +43,7 @@ Game.prototype.getPlayerPiece = function(player, pieceType) {
   // pieces.findWhere({user: user, _type: pieceType});
   return this.pieces.filter(function(piece) {
     return piece.getType() === pieceType &&
-        piece.getPlayer.equals(player);
+        piece.getPlayer().equals(player);
   });
 };
 
@@ -53,11 +53,13 @@ Game.prototype.getParalyzed = function() {
 };
 
 Game.prototype.getPiece = function(position) {
+  if (position == null) return;
   return this.board[position.y][position.x];
 };
 
 Game.prototype.getThreats = function(position) {
-  return this.threats[position.y][position.x];
+  var result = this.threats[position.y][position.x];
+  return (result != null) ? result : [];
 };
 
 Game.prototype.idGenerator = function() {
@@ -79,33 +81,41 @@ Game.prototype.emptyBoard = function(){
   return board;
 };
 
-Game.prototype.newPieces = function(player, startRow) {
-  if (startRow !== CLOSE_ROW_START &&
-      startRow !== FAR_ROW_START) throw "Not a valid start row";
+Game.prototype.newPieces = function(player) {
   var result = [];
+  var row = (player.getNumber() == 1) ?
+      CLOSE_ROW_START : FAR_ROW_START;
+
   // add pawns
   for (var i = 0; i < BOARD_SIZE; i++) {
     result.push(new Pawn(this,
-        player, new Position(i, startRow + 1)));
+        player, new Position(i, row)));
   }
+  // move to next row...
+  (player.getNumber() === 1) ? row++ : row--;
 
   // TODO: uncomment
   result.push(new Paralyzer(this,
-      player, new Position(0, startRow)));
-  // result.push(new Jumper(this,
-  //     player, new Position(1, startRow)));
+      player, new Position(0, row)));
+  result.push(new Jumper(this,
+      player, new Position(1, row)));
   // result.push(new Chameleon(this,
-  //     player, new Position(2, startRow)));
+  //     player, new Position(2, row)));
   result.push(new Retractor(this,
-      player, new Position(3, startRow)));
-  // result.push(new King(this,
-  //     player, new Position(4, startRow)));
+      player, new Position(3, row)));
+  result.push(new King(this,
+      player, new Position(4, row)));
   // result.push(new Chameleon(this,
-  //     player, new Position(5, startRow)));
-  // result.push(new Jumper(this,
-  //     player, new Position(6, startRow)));
+  //     player, new Position(5, row)));
+  result.push(new Jumper(this,
+      player, new Position(6, row)));
   result.push(new Synchronizer(this,
-      player, new Position(7, startRow)));
+      player, new Position(7, row)));
+
+  // remove this:
+  result.push(new Jumper(this,
+    player, new Position(2, 4)));
+
 
   return result;
 };

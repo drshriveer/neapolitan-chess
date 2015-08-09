@@ -1,7 +1,7 @@
 /** Constants */
 var BOARD_SIZE = 8;
 var CLOSE_ROW_START = 6;
-var FAR_ROW_START = 0;
+var FAR_ROW_START = 1;
 
 
 var Direction = {
@@ -18,7 +18,9 @@ var Threats = {
   // Pawns
   TRAP: "trap",
   // Paralyzer
-  PARALYSIS: "paralysis"
+  PARALYSIS: "paralysis",
+  // King
+  NONE: "none"
 };
 
 var Colors = {
@@ -37,5 +39,6 @@ var Pieces = {
   PARALYZER: "Paralyzer",
   PAWN: "Pawn",
   RETRACTOR: "Retractor",
+  SYNCHRONIZER: "Synchronizer"
 };
 

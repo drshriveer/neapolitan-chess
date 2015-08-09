@@ -1,6 +1,5 @@
 var Retractor = function(board, player, position) {
   Piece.apply(this, arguments);
-  this.movementRules = new MovementRules(7, true, true, true);
 };
 
 Retractor.prototype = Object.create(Piece.prototype);
@@ -16,7 +15,7 @@ Retractor.prototype.getImgUrl = function() {
 };
 
 /*** @Override */
-Retractor.prototype.threats = function(board) {
+Retractor.prototype.threats = function() {
   if (this.paralized) return [];
 
   // sorry for the confusion; these are 'backwards' vectors

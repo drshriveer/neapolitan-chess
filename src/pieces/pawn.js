@@ -1,12 +1,12 @@
 var Pawn = function(board, player, position) {
   Piece.apply(this, arguments);
-  this.movementRules = new MovementRules(2, true, true, false);
-
 };
+
 Pawn.prototype = Object.create(Piece.prototype);
 Pawn.prototype.constructor = Pawn;
 
 /*** @Override */
+Pawn.prototype._movementRules = new MovementRules(2, true, true, false);
 Pawn.prototype._type = Pieces.PAWN;
 Pawn.prototype._threatType = Threats.TRAP;
 
@@ -16,7 +16,7 @@ Pawn.prototype.getImgUrl = function() {
 };
 
 /*** @Override */
-Pawn.prototype.threats = function(board) {
+Pawn.prototype.threats = function() {
   var attackPartners = [
       new Vector(Direction.E, this.position.x+2, Direction.NONE, this.position.y),
       new Vector(Direction.W, this.position.x-2, Direction.NONE, this.position.y),
@@ -30,7 +30,7 @@ Pawn.prototype.threats = function(board) {
     if (vector.isOffBoard()) continue;
     var piece = this.game.getPiece(vector);
     if (piece == null) continue;
-    if (this.getType() === piece.getType() &&
+    if (piece.getType() === Pieces.PAWN &&
         this.player.equals(piece.getPlayer())) {
       var pos  = new Position(vector.x - vector.dx, vector.y - vector.dy);
       if (this.game.getPiece(pos) != null) continue;

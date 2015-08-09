@@ -1,6 +1,5 @@
 var Synchronizer = function(board, player, position) {
   Piece.apply(this, arguments);
-  this.movementRules = new MovementRules(7, true, true, true);
 };
 
 Synchronizer.prototype = Object.create(Piece.prototype);
@@ -16,7 +15,7 @@ Synchronizer.prototype.getImgUrl = function() {
 };
 
 /*** @Override */
-Synchronizer.prototype.threats = function(board) {
+Synchronizer.prototype.threats = function() {
   var king = this.game.getPlayerPiece(
       this.player, Pieces.KING)[0];
 
