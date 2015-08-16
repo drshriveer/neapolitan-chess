@@ -1,4 +1,4 @@
-var Pawn = function(board, player, position) {
+var Pawn = function(game, player, position) {
   Piece.apply(this, arguments);
 };
 
@@ -16,7 +16,8 @@ Pawn.prototype.getImgUrl = function() {
 };
 
 /*** @Override */
-Pawn.prototype.threats = function() {
+Pawn.prototype.threats = function(isChameleon) {
+  isChameleon = (isChameleon == null) ? false : true;
   var attackPartners = [
       new Vector(Direction.E, this.position.x+2, Direction.NONE, this.position.y),
       new Vector(Direction.W, this.position.x-2, Direction.NONE, this.position.y),

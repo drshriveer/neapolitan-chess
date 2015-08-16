@@ -1,4 +1,4 @@
-var Paralyzer = function(board, player, position) {
+var Paralyzer = function(game, player, position) {
   Piece.apply(this, arguments);
 };
 
@@ -16,8 +16,8 @@ Paralyzer.prototype.getImgUrl = function() {
 };
 
 /*** @Override */
-Paralyzer.prototype.threats = function() {
-  if (this.paralized) return [];
+Paralyzer.prototype.threats = function(isChameleon) {
+  isChameleon = (isChameleon == null) ? false : true;
   var potentialParalysis = [
       Vector.move(this.position, Direction.NONE, Direction.N),
       Vector.move(this.position, Direction.E,    Direction.NONE),
@@ -33,10 +33,13 @@ Paralyzer.prototype.threats = function() {
   for(var i = 0; i < potentialParalysis.length; i++) {
     var vector = potentialParalysis[i];
     if (vector.isOffBoard()) continue;
-    var piece = this.board.getPiece(vector);
+    var piece = this.game.getPiece(vector);
     if (piece == null) {
+      if (isChameleon) continue;
       result.push(vector);
     } else if (!this.player.equals(piece.getPlayer())) {
+      if (isChameleon &&
+          !piece.isType(Pieces.PARALYZER)) continue;
       piece.setParalyzed(true);
       result.push(vector);
     } // else its our piece; no threats

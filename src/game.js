@@ -12,6 +12,7 @@ Game = function(player1, player2) {
   this.pieces = [];
   this.pieces = this.pieces.concat(this.newPieces(player1));
   this.pieces = this.pieces.concat(this.newPieces(player2));
+  this.pieces = this.pieces.concat(this.testPieces(player1,player2));
   this.placePieces();
   this.turn = 1;
   Events.call(this);
@@ -112,10 +113,17 @@ Game.prototype.newPieces = function(player) {
   result.push(new Synchronizer(this,
       player, new Position(7, row)));
 
-  // remove this:
-  result.push(new Jumper(this,
-    player, new Position(2, 4)));
+  return result;
+};
 
+// FIXME: remove in favor of real tests when possible
+Game.prototype.testPieces = function(p1, p2) {
+  var result = [];
+
+  result.push(new Chameleon(this, p1, new Position(2,4)));
+  result.push(new Retractor(this, p2, new Position(3,4)));
+  result.push(new Jumper(this, p2, new Position(3,3)));
+  result.push(new Synchronizer(this, p2, new Position(4,4)));
 
   return result;
 };
@@ -141,7 +149,7 @@ Game.prototype.printBoard = function() {
     var row = this.board[i];
     var rowString = "";
     for (var j = 0; j < row.length; j++) {
-      rowString += (row[j] == null) ? "[________]" : row[j];
+      rowString += (row[j] == null) ? "[_______]" : row[j];
       rowString += "\t\t";
     }
     result += rowString + "\n";

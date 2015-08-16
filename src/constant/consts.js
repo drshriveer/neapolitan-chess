@@ -13,10 +13,12 @@ var Direction = {
 var Threats = {
   // Jumpers
   ATTACK: "attack",
-  // King, Synchronizer, Queen
+  // Synchronizer
   ASSASSINATION: "assassination",
   // Pawns
   TRAP: "trap",
+  // Queen
+  REVENGE: "revenge",
   // Paralyzer
   PARALYSIS: "paralysis",
   // King

@@ -1,4 +1,4 @@
-var King = function(board, player, position) {
+var King = function(game, player, position) {
   Piece.apply(this, arguments);
 };
 

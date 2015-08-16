@@ -57,6 +57,10 @@ Piece.prototype = {
     return this.paralyzed;
   },
 
+  isType: function(pieceType) {
+    return this._type === pieceType;
+  },
+
   setParalyzed: function(paralyzed) {
     this.paralyzed = paralyzed;
   },
@@ -139,7 +143,15 @@ Piece.prototype = {
   },
 
   toString: function() {
-    return "["+this._type+"|P"+this.player.getNumber() +"]";
+    return "["+this._type.substring(0,4)+"|P"+this.player.getNumber() +"]";
+  },
+
+  makeThreatResult: function() {
+    var result = {};
+    for (var threat in Threats) {
+      result[threat] = [];
+    }
+    return result;
   }
 
 };

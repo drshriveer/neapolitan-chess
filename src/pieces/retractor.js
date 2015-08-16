@@ -1,4 +1,4 @@
-var Retractor = function(board, player, position) {
+var Retractor = function(game, player, position) {
   Piece.apply(this, arguments);
 };
 
@@ -7,7 +7,7 @@ Retractor.prototype.constructor = Retractor;
 
 /*** @Override */
 Retractor.prototype._type = Pieces.RETRACTOR;
-Retractor.prototype._threatType = Threats.ASSASINATE;
+Retractor.prototype._threatType = Threats.REVENGE;
 
 /*** @Override */
 Retractor.prototype.getImgUrl = function() {
@@ -15,7 +15,8 @@ Retractor.prototype.getImgUrl = function() {
 };
 
 /*** @Override */
-Retractor.prototype.threats = function() {
+Retractor.prototype.threats = function(isChameleon) {
+  isChameleon = (isChameleon == null) ? false : true;
   if (this.paralized) return [];
 
   // sorry for the confusion; these are 'backwards' vectors
@@ -37,14 +38,16 @@ Retractor.prototype.threats = function() {
     var attackVector = potentialAttacks[i];
     if (attackVector.isOffBoard()) continue;
     var attackPiece = this.game.getPiece(attackVector);
-    if (attackPiece == null) continue;
+    if (attackPiece == null ||
+        this.player.equals(attackPiece.getPlayer())) continue;
+    if (isChameleon &&
+        !attackPiece.isType(Pieces.RETRACTOR)) continue;
     var reverseVector = Vector.move(this.position,
         -attackVector.dx, -attackVector.dy);
     if (reverseVector.isOffBoard()) continue;
     var reverseDirectionPiece = this.game.getPiece(reverseVector);
     var reverseDirectionThreats = this.game.getThreats(reverseVector);
-    if (reverseDirectionPiece == null &&
-        !this.player.equals(attackPiece.getPlayer())) {
+    if (reverseDirectionPiece == null) {
       result.push(attackVector);
     }
   }
