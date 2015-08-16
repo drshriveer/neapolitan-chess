@@ -50,7 +50,7 @@ Jumper.prototype.canMoveTo = function() {
 
 /*** @Override */
 Jumper.prototype.threats = function(isChameleon) {
-  if (this.paralized) return [];
+  if (this.paralyzed) return [];
   isChameleon = (isChameleon == null) ? false : true;
 
   var potentialAttacks = this.movementVectors();
@@ -68,7 +68,7 @@ Jumper.prototype.threats = function(isChameleon) {
         break;
       } else if (piece != null &&
           !piece.getPlayer().equals(this.player)) {
-        if (isChameleon && 
+        if (isChameleon &&
             !piece.isType(Pieces.JUMPER)) continue;
         var nextPosition = vector[i+1];
         if (nextPosition == null) break;

@@ -29,14 +29,23 @@ Pawn.prototype.threats = function(isChameleon) {
   for(var i = 0; i < attackPartners.length; i++) {
     var vector = attackPartners[i];
     if (vector.isOffBoard()) continue;
-    var piece = this.game.getPiece(vector);
-    if (piece == null) continue;
-    if (piece.getType() === Pieces.PAWN &&
-        this.player.equals(piece.getPlayer())) {
-      var pos  = new Position(vector.x - vector.dx, vector.y - vector.dy);
-      if (this.game.getPiece(pos) != null) continue;
-      result.push(pos);
+    var partner = this.game.getPiece(vector);
+    if (partner == null) continue;
+    if (!this.player.equals(partner.getPlayer())) continue;
+    var partnerIsChameleon = partner.isType(Pieces.CHAMELEON);
+    if (!partnerIsChameleon &&
+        !partner.isType(Pieces.PAWN)) continue;
+    var attackPosition  = new Position(vector.x - vector.dx, vector.y - vector.dy);
+    var attackPiece = this.game.getPiece(attackPosition);
+    if (attackPiece == null) {
+      if (isChameleon || partnerIsChameleon) continue;
+    } else if (this.player.equals(attackPiece.getPlayer())) {
+      continue;
+    } else if ((isChameleon || partnerIsChameleon) &&
+        !attackPiece.isType(Pieces.PAWN)) {
+      continue;
     }
+    result.push(attackPosition);
   }
   return result;
 };

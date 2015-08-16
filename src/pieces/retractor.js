@@ -17,7 +17,7 @@ Retractor.prototype.getImgUrl = function() {
 /*** @Override */
 Retractor.prototype.threats = function(isChameleon) {
   isChameleon = (isChameleon == null) ? false : true;
-  if (this.paralized) return [];
+  if (this.paralyzed) return [];
 
   // sorry for the confusion; these are 'backwards' vectors
   var potentialAttacks = [

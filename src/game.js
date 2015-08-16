@@ -124,6 +124,8 @@ Game.prototype.testPieces = function(p1, p2) {
   result.push(new Retractor(this, p2, new Position(3,4)));
   result.push(new Jumper(this, p2, new Position(3,3)));
   result.push(new Synchronizer(this, p2, new Position(4,4)));
+  result.push(new Paralyzer(this, p2, new Position(1,4)));
+  result.push(new Pawn(this, p2, new Position(2,5)));
 
   return result;
 };

@@ -57,6 +57,7 @@ Chameleon.prototype.threats = function() {
   result.ATTACK = Jumper.prototype.threats.call(this, true);
   result.PARALYSIS = Paralyzer.prototype.threats.call(this, true);
   result.ASSASSINATION = Synchronizer.prototype.threats.call(this, true);
+  result.TRAP = Pawn.prototype.threats.call(this, true);
 
   return result;
 };
